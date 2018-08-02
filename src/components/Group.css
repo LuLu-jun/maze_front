@@ -1,0 +1,32 @@
+.group {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-items: flex-start;
+    height: 40px;
+    width: 100%;
+    margin: 12px;
+}
+
+/* flex: 1 sais, that each of the elements shall get the same amount of space, ergo the same width */
+.group span {
+    flex: 1;
+    height: 100%;
+}
+
+.left{
+    height: 100%;
+    display: flex;
+    justify-content: flex-start;
+}
+.center{
+    height: 100%;
+    display: flex;
+    justify-content: center;
+}
+.right{
+    height: 100%;
+    display: flex;
+    justify-content: flex-end;
+}
