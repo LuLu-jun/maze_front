@@ -1,0 +1,15 @@
+table{
+    margin: 30px auto;
+}
+table, th, td {
+    border: 1px solid white;
+    border-collapse: collapse;
+    color: white;
+    text-align: center;
+    padding: 15px;
+}
+
+h3{
+    margin: 0px;
+    color: white;
+}

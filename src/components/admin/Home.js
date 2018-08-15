@@ -38,6 +38,9 @@ class Home extends Component {
                     <h1 style={styles.text}>about</h1>
                     <div className="buttons" style={styles.buttons}>
                         <h1 style={styles.button} onClick={this.logout}>Log out</h1>
+                        <Link to="/admin/member" style={{textDecoration: 'none',}}>
+                            <h1 style={styles.button}>Members</h1>
+                        </Link>
                         <h1 style={styles.button}>Problems</h1>
                         <Link to="/admin/class" style={{textDecoration: 'none',}}>
                             <h1 style={styles.button}>Classes</h1>

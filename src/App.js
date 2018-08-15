@@ -8,6 +8,7 @@ import Story from './components/Story';
 import Problem from './components/Problem';
 import AdminHome from './components/admin/Home';
 import AdminClass from './components/admin/Class';
+import AdminMember from './components/admin/Member';
 
 import './App.css';
 
@@ -23,6 +24,7 @@ class App extends Component {
               <Route path="/story/:num" component={Story} />
               <Route path="/admin/home" component={AdminHome} />
               <Route path="/admin/class" component={AdminClass} />
+              <Route path="/admin/member" component={AdminMember} />
           </Switch>
       </div>
     );
