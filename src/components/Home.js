@@ -6,15 +6,41 @@ import { withCookies } from 'react-cookie';
 import { logout } from '../redux/actions'
 import './Home.css'
 
-function prevProblemList(curProblem) {
+function recentPageLink(recentPage){
+    const { type, number } = recentPage;
+    return String(type) + "/" + String(number);
+}
+
+function prevPageList(recentPage) {
+    const { type, number } = recentPage;
     var array = [];
-    for (var i = 0; i < curProblem - 1; i++){
+
+    for (var i = 1; i < number; i++){
         array.push(
-            <Link to={"/problem/" + String(i + 1)}>
-                <h2 style={styles.text}>Go To {i + 1}</h2>
-            </Link>
+            <div style={styles.box}>
+                <Link to={"/story/" + String(i)}>
+                    <h2 style={styles.text}>Story {i}</h2>
+                </Link>
+            </div>
+        );
+        array.push(
+            <div style={styles.box}>
+                <Link to={"/problem/" + String(i)}>
+                    <h2 style={styles.text}>Problem {i}</h2>
+                </Link>
+            </div>
         );
     }
+    if (String(type) === "problem"){
+        array.push(
+            <div style={styles.lastBox}>
+                <Link to={"/story/" + String(number)}>
+                    <h2 style={styles.text}>Story {number}</h2>
+                </Link>
+            </div>
+        );
+    }
+
     return array;
 }
 
@@ -24,8 +50,7 @@ class Home extends Component {
 
         this.valid = this.valid.bind(this);
         this.logout = this.logout.bind(this);
-        this.curProblemLink = this.curProblemLink.bind(this);
-        this.curProblem = 6;
+        this.recentPage = {type : "problem", number : 6};
     }
 
     valid(){
@@ -40,10 +65,6 @@ class Home extends Component {
         this.props.logout();
     }
 
-    curProblemLink(){
-        return "/problem/" + String(this.curProblem);
-    }
-
     render() {
         if (!this.valid()){
             return (
@@ -55,9 +76,11 @@ class Home extends Component {
             <div className="container" style={styles.container}>
                 <h1 style={{marginBottom: '0px'}}>Hello, labyrinth ({this.props.userId})!!</h1>
                 <p style={styles.logout} onClick={this.logout}>Log out</p>
-                <Link to={this.curProblemLink()}><h2 style={styles.text}>Go To Current Problem</h2></Link>
-                <h2 style={{marginTop: '50px', }}>Previous Problem List</h2>
-                { prevProblemList(this.curProblem) }
+                <Link to={recentPageLink(this.recentPage)}><h2 style={styles.text}>Go To Recent Page</h2></Link>
+                <h2 style={{marginTop: '50px', }}>Previous Page List</h2>
+                <div className="pageList" style={styles.pageList}>
+                    { prevPageList(this.recentPage) }
+                </div>
             </div>
         );
     }
@@ -76,6 +99,16 @@ const styles = {
         margin: '0',
         marginBottom: '40px',
         textDecoration: 'underline',
+    },
+    pageList: {
+        width: '300px',
+    },
+    box: {
+        display: 'inline-block',
+        width: '150px',
+    },
+    lastBox: {
+        width: '150px',
     },
     text: {
         textDecoration: 'underline',
