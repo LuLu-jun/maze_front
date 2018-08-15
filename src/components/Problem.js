@@ -1,28 +1,67 @@
 import React, {Component} from 'react';
+import { Link, Redirect } from 'react-router-dom';
+import { connect } from 'react-redux';
+
 import image from '../image.png'
 import okIcon from '../ok.png'
 import homeIcon from '../home.png'
 
 import './Group.css';
 
+var answer='';
+
 class Problem extends Component {
-    constructor(props) {
+    constructor(props, match) {
         super(props);
+
+        this.state={
+            correct: false,
+        };
+        this.problemNum = this.props.match.params.num;
+        this.valid = this.valid.bind(this);
+        this.onKeyPress = this.onKeyPress.bind(this);
+    }
+
+    valid(){
+        const userId = this.props.userId;
+        const isAdmin = this.props.isAdmin;
+        return (userId!=undefined && isAdmin!=undefined && userId!=="" && !isAdmin);
+    }
+
+    onKeyPress(event){
+        if (event.key === 'Enter'){
+            this.setState({
+                correct: true,
+            });
+        }
     }
 
     render() {
+        if (!this.valid()){
+            return (
+                <Redirect to='/' />
+            );
+        }
+        if (this.state.correct){
+            return (
+                <Redirect to={'/story/' + String(parseInt(this.problemNum) + 1)}/>
+            );
+        }
         return (
             <div className="container" style={styles.container}>
-                <div class="group">
-                    <span><div class="left">
-                        <img className="mainIcon" src={homeIcon} style={styles.mainIcon}/>
+                <div className="group">
+                    <span><div className="left">
+                        <Link to="/" style={{width: '0',}}>
+                            <img className="mainIcon" src={homeIcon} style={styles.mainIcon}/>
+                        </Link>
                     </div></span>
-                    <span><div class="center">
+                    <span><div className="center">
                         <h2 className="time" style={styles.time}>11:11</h2>
                     </div></span>
-                    <span><div class="right">
+                    <span><div className="right">
                         <div className="answerBox" style={styles.answerBox}>
-                            <input type="text" style={styles.answerInput}/>
+                            <input type="text" style={styles.answerInput} onKeyPress={this.onKeyPress}
+                                   onChange={(event) => {answer= event.target.value}} />
                             <img className="okButton" src={okIcon} style={styles.answerButton}/>
                         </div>
                     </div></span>
@@ -99,4 +138,11 @@ const styles = {
     },
 };
 
-export default Problem;
+var mapStateToProps = (state) => {
+    return ({
+        userId: state.login.userId,
+        isAdmin: state.login.isAdmin,
+    });
+}
+
+export default connect(mapStateToProps)(Problem);

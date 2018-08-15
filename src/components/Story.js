@@ -1,4 +1,7 @@
 import React, {Component} from 'react';
+import { Link, Redirect } from 'react-router-dom';
+import { connect } from 'react-redux';
+
 import image from '../image.png'
 import homeIcon from '../home.png'
 
@@ -8,18 +11,36 @@ import './Group.css';
 class Story extends Component {
     constructor(props) {
         super(props);
+
+        this.storyNum = this.props.match.params.num;
+        this.valid = this.valid.bind(this);
+    }
+
+    valid(){
+        const userId = this.props.userId;
+        const isAdmin = this.props.isAdmin;
+        return (userId!=undefined && isAdmin!=undefined && userId!=="" && !isAdmin);
     }
 
     render() {
+        if (!this.valid()){
+            return (
+                <Redirect to='/' />
+            );
+        }
         return (
             <div className="container" style={styles.container}>
-                <div class="group">
-                    <span><div class="left">
-                        <img className="mainIcon" src={homeIcon} style={styles.mainIcon}/>
+                <div className="group">
+                    <span><div className="left">
+                        <Link to="/" style={{width: '0',}}>
+                            <img className="mainIcon" src={homeIcon} style={styles.mainIcon}/>
+                        </Link>
                     </div></span>
-                    <span><div class="center"></div></span>
-                    <span><div class="right">
-                        <h3 className="nextButton" style={styles.nextButton}>NEXT></h3>
+                    <span><div className="center"></div></span>
+                    <span><div className="right">
+                        <Link to={"/problem/" + String(this.storyNum)} style={{textDecoration: 'none',}}>
+                            <h3 className="nextButton" style={styles.nextButton}>NEXT></h3>
+                        </Link>
                     </div></span>
                 </div>
                 <img className="content" src={image} style={styles.content}/>
@@ -51,4 +72,11 @@ const styles = {
     },
 };
 
-export default Story;
+var mapStateToProps = (state) => {
+    return ({
+        userId: state.login.userId,
+        isAdmin: state.login.isAdmin,
+    });
+}
+
+export default connect(mapStateToProps)(Story);

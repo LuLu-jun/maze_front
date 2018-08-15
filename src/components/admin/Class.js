@@ -1,4 +1,6 @@
 import React, {Component} from 'react';
+import { Redirect } from 'react-router-dom'
+import { connect } from 'react-redux';
 import './Class.css'
 
 function getHeader(){
@@ -57,16 +59,36 @@ function getTable(){
 class Class extends Component {
     constructor(props) {
         super(props);
+        this.valid = this.valid.bind(this);
         this.table = getTable();
     }
 
+    valid(){
+        const userId = this.props.userId;
+        const isAdmin = this.props.isAdmin;
+        return (userId!=undefined && isAdmin!=undefined && userId!=="" && isAdmin);
+    }
+
     render() {
+        if (!this.valid()){
+            return (
+                <Redirect to="/" />
+            );
+        }
+
         return (
             <div className="container" style={styles.container}>
                 <table>{this.table}</table>
             </div>
         );
     }
+}
+
+var mapStateToProps = (state) => {
+    return ({
+        userId: state.login.userId,
+        isAdmin: state.login.isAdmin,
+    });
 }
 
 const styles = {
@@ -78,4 +100,4 @@ const styles = {
     },
 };
 
-export default Class;
+export default connect(mapStateToProps)(Class);
