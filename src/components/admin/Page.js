@@ -7,6 +7,7 @@ var pageTypes = new Array("문제", "스토리");
 var classTypes = new Array("전기", "후기");
 var problemTypes = new Array("가", "나");
 var inputPageType = pageTypes[0];
+var inputNum = '';
 var inputClassType = classTypes[0];
 var inputProblemType = problemTypes[0];
 var inputFile = undefined;
@@ -36,6 +37,7 @@ class Page extends Component {
 
     addPage(){
         console.log(inputPageType);
+        console.log(inputNum);
         console.log(inputClassType);
         console.log(inputProblemType);
         console.log(inputFile);
@@ -54,7 +56,7 @@ class Page extends Component {
     getHeader(){
         var header = [];
 
-        header.push(<th>Page</th>);
+        header.push(<th>Num</th>);
         header.push(<th>Show</th>);
         header.push(<th>Delete</th>);
 
@@ -63,7 +65,7 @@ class Page extends Component {
 
     makeData(classType, problemType, k){
         return (<tr>
-            <th>{"문제 " + String(k+1)}</th>
+            <th>{k+1}</th>
             <th style={styles.button} onClick={() => this.showPage(classType, problemType, k+1)}>
                 Show
             </th>
@@ -95,6 +97,12 @@ class Page extends Component {
     }
 
     getTableTitle(classType, problemType){
+        if (problemType == -1){
+            return (
+                <h2 style={styles.tableTitle}>{classTypes[classType]}</h2>
+            );
+        }
+
         return (
             <h2 style={styles.tableTitle}>
                 {classTypes[classType] + " (" + problemTypes[problemType] + ")"}
@@ -103,10 +111,19 @@ class Page extends Component {
     }
 
     getTables(){
-        var tables = [];
+        var tables = new Map();
+        var storyTables = [];
+        var problemTables = [];
+
         for (var classType in classTypes){
+            storyTables.push(
+                <div style={styles.table}>
+                    {this.getTableTitle(classType, -1)}
+                    <div>{this.getTable(classType, -1)}</div>
+                </div>
+            );
             for (var problemType in problemTypes){
-                tables.push(
+                problemTables.push(
                     <div style={styles.table}>
                         {this.getTableTitle(classType, problemType)}
                         <div>{this.getTable(classType, problemType)}</div>
@@ -114,6 +131,9 @@ class Page extends Component {
                 );
             }
         }
+        tables.set(pageTypes[0], storyTables);
+        tables.set(pageTypes[1], problemTables);
+
         return tables;
     }
 
@@ -127,15 +147,17 @@ class Page extends Component {
         return (
             <div className="container" style={styles.container}>
                 <div className="box" style={styles.box}>
-                    <select value={inputPageType} onChange={(event) => {inputPageType = event.target.value}}>
+                    <select defaultValue={inputPageType} onChange={(event) => {inputPageType = event.target.value}}>
                         <option value={pageTypes[0]}>문제</option>
                         <option value={pageTypes[1]}>스토리</option>
                     </select>
-                    <select value={inputClassType} onChange={(event) => {inputClassType = event.target.value}}>
+                    <input type="text" placeholder="번호" style={{width: '50px', textAlign: 'center',}}
+                           onChange={(event) => {inputNum = event.target.value}}/>
+                    <select defaultValue={inputClassType} onChange={(event) => {inputClassType = event.target.value}}>
                         <option value={classTypes[0]}>전기</option>
                         <option value={classTypes[1]}>후기</option>
                     </select>
-                    <select value={inputProblemType} onChange={(event) => {inputProblemType = event.target.value}}>
+                    <select defaultValue={inputProblemType} onChange={(event) => {inputProblemType = event.target.value}}>
                         <option value={problemTypes[0]}>가</option>
                         <option value={problemTypes[1]}>나</option>
                     </select>
@@ -143,8 +165,15 @@ class Page extends Component {
                             onChange={(event) => {inputFile = event.target.files[0]}}/>
                     <h3 onClick={this.addPage} style={styles.button}>+ add</h3>
                 </div>
-                <div style={styles.tables}>
-                    {this.state.tables}
+                <div style={styles.group}>
+                    <h1 style={styles.tableTitle}>스토리</h1>
+                    <div style={styles.tables}>
+                        {this.state.tables.get(pageTypes[0])}
+                    </div>
+                    <h1 style={styles.tableTitle}>문제</h1>
+                    <div style={styles.tables}>
+                        {this.state.tables.get(pageTypes[1])}
+                    </div>
                 </div>
             </div>
         );
@@ -166,9 +195,15 @@ const styles = {
         justifyContent: 'center',
         alignItems: 'center',
     },
+    group: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'start',
+    },
     tables:{
         display: 'flex',
         flexDirection: 'row',
+        marginBottom: '50px',
     },
     table: {
         display: 'flex',

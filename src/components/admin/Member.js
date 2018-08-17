@@ -6,8 +6,9 @@ import './Member.css'
 var classNum='';
 var id='';
 var pwd='';
-var classType='';
-var problemType='';
+var classTypes = new Array("전기", "후기");
+var classType = classTypes[0];
+var problemTypes='';
 
 class Member extends Component {
     constructor(props) {
@@ -31,16 +32,11 @@ class Member extends Component {
     }
 
     addMember(){
-        if (!((classType=="전기" || classType=="후기") && (problemType=="가" || problemType=="나"))){
-            alert('input type error');
-            return;
-        }
-
         console.log(classNum);
         console.log(id);
         console.log(pwd);
         console.log(classType);
-        console.log(problemType);
+        console.log(problemTypes);
     }
 
     deleteMember(classNum){
@@ -66,7 +62,7 @@ class Member extends Component {
             <th>{"class" + String(i+1)}</th>
             <th>{"pwd" + String(i+1)}</th>
             <th>전기</th>
-            <th>가</th>
+            <th>가나나가나가나가나나</th>
             <th style={styles.button} onClick={() => this.deleteMember(i+1)}>
                 Delete
             </th>
@@ -110,10 +106,12 @@ class Member extends Component {
                            onChange={(event) => {id = event.target.value}}/>
                     <input type="text" style={styles.boxInputStyle} placeholder="pwd"
                            onChange={(event) => {pwd = event.target.value}}/>
-                    <input type="text" style={styles.boxInputStyle} placeholder="class type (전기 or 후기)"
-                           onChange={(event) => {classType = event.target.value}}/>
-                    <input type="text" style={styles.boxInputStyle} placeholder="problem type (가 or 나)"
-                           onChange={(event) => {problemType = event.target.value}}/>
+                    <select defaultValue={classType} onChange={(event) => {classType = event.target.value}}>
+                        <option value={classTypes[0]}>전기</option>
+                        <option value={classTypes[1]}>후기</option>
+                    </select>
+                    <input type="text" style={styles.boxInputStyle} placeholder="problem types (가 or 나)"
+                           onChange={(event) => {problemTypes = event.target.value}}/>
                     <h3 onClick={this.addMember} style={styles.button}>+ add</h3>
                 </div>
                 <table>{this.state.table}</table>
