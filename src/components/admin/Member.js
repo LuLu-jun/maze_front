@@ -9,6 +9,7 @@ var pwd='';
 var classTypes = new Array("전기", "후기");
 var classType = classTypes[0];
 var problemTypes='';
+var hints = new Array("", "", "");
 
 class Member extends Component {
     constructor(props) {
@@ -17,6 +18,7 @@ class Member extends Component {
         this.addMember = this.addMember.bind(this);
         this.deleteMember = this.deleteMember.bind(this);
         this.getHeader = this.getHeader.bind(this);
+        this.getHints = this.getHints.bind(this);
         this.makeData = this.makeData.bind(this);
         this.getDatas = this.getDatas.bind(this);
         this.getTable = this.getTable.bind(this);
@@ -51,9 +53,18 @@ class Member extends Component {
         header.push(<th>Password</th>);
         header.push(<th>Class Type</th>);
         header.push(<th>Problem Type</th>);
+        header.push(<th>Hint codes</th>);
         header.push(<th>Delete</th>);
 
         return (<tr>{header}</tr>);
+    }
+
+    getHints(){
+        var hints = [];
+        for (var i=0; i<3;i ++){
+            hints.push(<p style={{margin: '0'}}>sdfsddfssfdsdsdf</p>);
+        }
+        return (<div style={{display: 'flex', flexDirection: 'column'}}>{hints}</div>);
     }
 
     makeData(i){
@@ -63,6 +74,7 @@ class Member extends Component {
             <th>{"pwd" + String(i+1)}</th>
             <th>전기</th>
             <th>가나나가나가나가나나</th>
+            <th>{this.getHints()}</th>
             <th style={styles.button} onClick={() => this.deleteMember(i+1)}>
                 Delete
             </th>
@@ -100,18 +112,30 @@ class Member extends Component {
         return (
             <div className="container" style={styles.container}>
                 <div className="box" style={styles.box}>
-                    <input type="text" style={styles.boxInputStyle} placeholder="class number"
-                           onChange={(event) => {classNum = event.target.value}}/>
-                    <input type="text" style={styles.boxInputStyle} placeholder="id"
-                           onChange={(event) => {id = event.target.value}}/>
-                    <input type="text" style={styles.boxInputStyle} placeholder="pwd"
-                           onChange={(event) => {pwd = event.target.value}}/>
-                    <select defaultValue={classType} onChange={(event) => {classType = event.target.value}}>
-                        <option value={classTypes[0]}>전기</option>
-                        <option value={classTypes[1]}>후기</option>
-                    </select>
-                    <input type="text" style={styles.boxInputStyle} placeholder="problem types (가 or 나)"
-                           onChange={(event) => {problemTypes = event.target.value}}/>
+                    <div style={styles.inputs}>
+                        <div style={styles.inputLine}>
+                            <input type="text" style={styles.boxInputStyle} placeholder="class number"
+                                   onChange={(event) => {classNum = event.target.value}}/>
+                            <input type="text" style={styles.boxInputStyle} placeholder="id"
+                                   onChange={(event) => {id = event.target.value}}/>
+                            <input type="text" style={styles.boxInputStyle} placeholder="pwd"
+                                   onChange={(event) => {pwd = event.target.value}}/>
+                            <select defaultValue={classType} onChange={(event) => {classType = event.target.value}}>
+                                <option value={classTypes[0]}>전기</option>
+                                <option value={classTypes[1]}>후기</option>
+                            </select>
+                            <input type="text" style={styles.boxInputStyle} placeholder="problem types (가 or 나)"
+                                   onChange={(event) => {problemTypes = event.target.value}}/>
+                        </div>
+                        <div stlye={styles.inputLine}>
+                            <input type="text" style={styles.boxInputStyle} placeholder="hint code 1"
+                                   onChange={(event) => {hints[0] = event.target.value}}/>
+                            <input type="text" style={styles.boxInputStyle} placeholder="hint code 2"
+                                   onChange={(event) => {hints[1] = event.target.value}}/>
+                            <input type="text" style={styles.boxInputStyle} placeholder="hint code 3"
+                                   onChange={(event) => {hints[2] = event.target.value}}/>
+                        </div>
+                    </div>
                     <h3 onClick={this.addMember} style={styles.button}>+ add</h3>
                 </div>
                 <table>{this.state.table}</table>
@@ -138,8 +162,16 @@ const styles = {
     box: {
         display: 'flex',
         flexDirection :'row',
-        height: '40px',
         alignItems: 'center',
+    },
+    inputs: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'start',
+    },
+    inputLine: {
+        display: 'flex',
+        flexDirection: 'row',
     },
     button: {
         textDecoration: 'underline',

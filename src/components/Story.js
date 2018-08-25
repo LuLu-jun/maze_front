@@ -3,6 +3,7 @@ import { Link, Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 
 import image from '../image.png'
+import storyImage from '../story.png'
 import homeIcon from '../home.png'
 
 import './Group.css';
@@ -43,7 +44,7 @@ class Story extends Component {
                         </Link>
                     </div></span>
                 </div>
-                <img className="content" src={image} style={styles.content}/>
+                <img className="content" src={storyImage} style={styles.content}/>
             </div>
         );
     }
@@ -68,7 +69,7 @@ const styles = {
     },
     content: {
         margin: 'auto',
-        width: '500px',
+        width: '800px',
     },
 };
 

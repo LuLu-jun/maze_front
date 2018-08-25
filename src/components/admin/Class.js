@@ -1,6 +1,9 @@
 import React, {Component} from 'react';
 import { Redirect } from 'react-router-dom'
 import { connect } from 'react-redux';
+
+import yellowCard from '../../yellowCard.png'
+
 import './Class.css'
 
 function getHeader(){
@@ -16,8 +19,17 @@ function getHeader(){
     header.push(<th>Problem 7</th>);
     header.push(<th>Problem 8</th>);
     header.push(<th>Problem 9</th>);
+    header.push(<th>Yellow card</th>);
 
     return (<tr>{header}</tr>);
+}
+
+function getYellowCard(num){
+    var cards = [];
+    for (var i=0; i<num; i++){
+        cards.push(<img src={yellowCard} style={{width: '12px'}} />);
+    }
+    return (<div style={styles.cards}>{cards}</div>);
 }
 
 function makeData(i){
@@ -32,6 +44,7 @@ function makeData(i){
         <th>11:22:33</th>
         <th>11:22:33</th>
         <th>11:22:33</th>
+        <th>{getYellowCard(i%3)}</th>
     </tr>);
 }
 
@@ -97,6 +110,14 @@ const styles = {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
+    },
+    cards: {
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        width: '30px',
+        height: '20px',
+        margin : 'auto',
     },
 };
 

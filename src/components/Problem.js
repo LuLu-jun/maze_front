@@ -3,6 +3,7 @@ import { Link, Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 
 import image from '../image.png'
+import problemImage from '../problem.png'
 import okIcon from '../ok.png'
 import homeIcon from '../home.png'
 
@@ -66,12 +67,12 @@ class Problem extends Component {
                         </div>
                     </div></span>
                 </div>
+                <img className="content" src={problemImage} style={styles.content}/>
                 <div className="hintGroup" style={styles.hintGroup}>
                     <p style={styles.hint}>힌트1</p>
                     <p style={styles.hint}>힌트2sdfasdfdasffadsasdfzcxcx</p>
                     <p style={styles.hint}>힌트3wewwerweerw</p>
                 </div>
-                <img className="content" src={image} style={styles.content}/>
             </div>
         );
     }
@@ -124,7 +125,6 @@ const styles = {
     },
     hintGroup: {
         margin: 'auto',
-        marginBottom: '0',
     },
     hint: {
         color: 'white',
@@ -134,7 +134,7 @@ const styles = {
     },
     content: {
         margin: 'auto',
-        width: '500px',
+        width: '1000px',
     },
 };
 
