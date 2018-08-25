@@ -1,6 +1,9 @@
 import React, {Component} from 'react';
+import axios from 'axios'
 import { Redirect } from 'react-router-dom'
-import { connect } from 'react-redux';
+import { connect } from 'react-redux'
+
+import { API_MEMBER_URL } from "../../URL"
 import './Member.css'
 
 var classNum='';
@@ -9,7 +12,7 @@ var pwd='';
 var classTypes = new Array("전기", "후기");
 var classType = classTypes[0];
 var problemTypes='';
-var hints = new Array("", "", "");
+var hintCodes = new Array("", "", "");
 
 class Member extends Component {
     constructor(props) {
@@ -18,13 +21,14 @@ class Member extends Component {
         this.addMember = this.addMember.bind(this);
         this.deleteMember = this.deleteMember.bind(this);
         this.getHeader = this.getHeader.bind(this);
-        this.getHints = this.getHints.bind(this);
-        this.makeData = this.makeData.bind(this);
-        this.getDatas = this.getDatas.bind(this);
+        this.getHintCodes = this.getHintCodes.bind(this);
+        this.getRow = this.getRow.bind(this);
+        this.getRows = this.getRows.bind(this);
         this.getTable = this.getTable.bind(this);
         this.state={
-            table: this.getTable(),
+            table: '',
         }
+        this.getTable();
     }
 
     valid(){
@@ -34,15 +38,30 @@ class Member extends Component {
     }
 
     addMember(){
-        console.log(classNum);
-        console.log(id);
-        console.log(pwd);
-        console.log(classType);
-        console.log(problemTypes);
+        axios.post(API_MEMBER_URL, {
+            classNum: classNum,
+            id: id,
+            pwd: pwd,
+            classType: classType,
+            problemType: problemTypes,
+            hintCodes: hintCodes,
+        })
+            .then( response => {
+                var data = response.data;
+                if (data.result == 0) { alert(data.error); }
+                else { this.getTable(); }
+            })
+            .catch( response => { alert(response) } );
     }
 
     deleteMember(classNum){
-        console.log(classNum);
+        axios.delete(API_MEMBER_URL + "/" + String(classNum))
+            .then( response => {
+                var data = response.data;
+                if (data.result == 0) { alert(data.error); }
+                else { this.getTable(); }
+            })
+            .catch( response => { alert(response) } );
     }
 
     getHeader(){
@@ -59,33 +78,36 @@ class Member extends Component {
         return (<tr>{header}</tr>);
     }
 
-    getHints(){
-        var hints = [];
-        for (var i=0; i<3;i ++){
-            hints.push(<p style={{margin: '0'}}>sdfsddfssfdsdsdf</p>);
+    getHintCodes(hintCodes){
+        var result = [];
+
+        for (var i=0; i<hintCodes.length;i ++){
+            result.push(<p style={{margin: '0'}}>{hintCodes[i]}</p>);
         }
-        return (<div style={{display: 'flex', flexDirection: 'column'}}>{hints}</div>);
+        return (<div style={{display: 'flex', flexDirection: 'column'}}>{result}</div>);
     }
 
-    makeData(i){
+    getRow(memberData){
+        const { classNum, id, pwd, classType, problemType, hintCodes } = memberData;
+
         return (<tr>
-            <th>{i+1}</th>
-            <th>{"class" + String(i+1)}</th>
-            <th>{"pwd" + String(i+1)}</th>
-            <th>전기</th>
-            <th>가나나가나가나가나나</th>
-            <th>{this.getHints()}</th>
-            <th style={styles.button} onClick={() => this.deleteMember(i+1)}>
+            <th>{ classNum }</th>
+            <th>{ id }</th>
+            <th>{ pwd }</th>
+            <th>{ classType }</th>
+            <th>{ problemType }</th>
+            <th>{ this.getHintCodes(hintCodes) }</th>
+            <th style={styles.button} onClick={() => this.deleteMember(classNum)}>
                 Delete
             </th>
         </tr>);
     }
 
-    getDatas(){
+    getRows(membersData){
         var datas = [];
 
-        for (var i=0; i<30; i++) {
-            datas.push(this.makeData(i))
+        for (var i=0; i<membersData.length; i++) {
+            datas.push(this.getRow(membersData[i]));
         }
 
         return datas;
@@ -94,12 +116,22 @@ class Member extends Component {
     getTable(){
         var table = [];
         var header = this.getHeader();
-        var datas = this.getDatas();
 
-        table.push(header);
-        table.push(datas);
-
-        return table;
+        axios.get(API_MEMBER_URL)
+            .then( response => {
+                var data = response.data;
+                if (data.result == 0) { alert(data.error); }
+                else {
+                    var membersData = response.data.members;
+                    var elements = this.getRows(membersData);
+                    table.push(header);
+                    table.push(elements);
+                    this.setState({
+                        table: table
+                    });
+                }
+            })
+            .catch( response => { alert(response) } );
     }
 
     render() {
@@ -115,7 +147,7 @@ class Member extends Component {
                     <div style={styles.inputs}>
                         <div style={styles.inputLine}>
                             <input type="text" style={styles.boxInputStyle} placeholder="class number"
-                                   onChange={(event) => {classNum = event.target.value}}/>
+                                   onChange={(event) => {classNum = Number(event.target.value)}}/>
                             <input type="text" style={styles.boxInputStyle} placeholder="id"
                                    onChange={(event) => {id = event.target.value}}/>
                             <input type="text" style={styles.boxInputStyle} placeholder="pwd"
@@ -129,11 +161,11 @@ class Member extends Component {
                         </div>
                         <div stlye={styles.inputLine}>
                             <input type="text" style={styles.boxInputStyle} placeholder="hint code 1"
-                                   onChange={(event) => {hints[0] = event.target.value}}/>
+                                   onChange={(event) => {hintCodes[0] = event.target.value}}/>
                             <input type="text" style={styles.boxInputStyle} placeholder="hint code 2"
-                                   onChange={(event) => {hints[1] = event.target.value}}/>
+                                   onChange={(event) => {hintCodes[1] = event.target.value}}/>
                             <input type="text" style={styles.boxInputStyle} placeholder="hint code 3"
-                                   onChange={(event) => {hints[2] = event.target.value}}/>
+                                   onChange={(event) => {hintCodes[2] = event.target.value}}/>
                         </div>
                     </div>
                     <h3 onClick={this.addMember} style={styles.button}>+ add</h3>
