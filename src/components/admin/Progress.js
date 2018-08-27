@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 
 import yellowCard from '../../yellowCard.png'
 
-import './Class.css'
+import './Progress.css'
 
 function getHeader(){
     var header = [];
@@ -69,7 +69,7 @@ function getTable(){
     return table;
 }
 
-class Class extends Component {
+class Progress extends Component {
     constructor(props) {
         super(props);
         this.valid = this.valid.bind(this);
@@ -121,4 +121,4 @@ const styles = {
     },
 };
 
-export default connect(mapStateToProps)(Class);
+export default connect(mapStateToProps)(Progress);

@@ -41,8 +41,8 @@ class Home extends Component {
                         <Link to="/admin/member" style={{textDecoration: 'none',}}>
                             <h1 style={styles.button}>Members</h1>
                         </Link>
-                        <Link to="/admin/class" style={{textDecoration: 'none',}}>
-                            <h1 style={styles.button}>Classes</h1>
+                        <Link to="/admin/progress" style={{textDecoration: 'none',}}>
+                            <h1 style={styles.button}>Progresses</h1>
                         </Link>
                         <Link to="/admin/problem" style={{textDecoration: 'none',}}>
                             <h1 style={styles.button}>Problems</h1>

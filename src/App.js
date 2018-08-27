@@ -7,7 +7,7 @@ import Home from './components/Home';
 import Story from './components/Story';
 import Problem from './components/Problem';
 import AdminHome from './components/admin/Home';
-import AdminClass from './components/admin/Class';
+import AdminProgress from './components/admin/Progress';
 import AdminMember from './components/admin/Member';
 import AdminStory from './components/admin/Story';
 import AdminProblem from './components/admin/Problem';
@@ -25,7 +25,7 @@ class App extends Component {
               <Route path="/problem/:num" component={Problem} />
               <Route path="/story/:num" component={Story} />
               <Route path="/admin/home" component={AdminHome} />
-              <Route path="/admin/class" component={AdminClass} />
+              <Route path="/admin/progress" component={AdminProgress} />
               <Route path="/admin/member" component={AdminMember} />
               <Route path="/admin/problem" component={AdminProblem} />
               <Route path="/admin/story" component={AdminStory} />
