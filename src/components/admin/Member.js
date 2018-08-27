@@ -104,13 +104,13 @@ class Member extends Component {
     }
 
     getRows(membersData){
-        var datas = [];
+        var rows = [];
 
         for (var i=0; i<membersData.length; i++) {
-            datas.push(this.getRow(membersData[i]));
+            rows.push(this.getRow(membersData[i]));
         }
 
-        return datas;
+        return rows;
     }
 
     getTable(){

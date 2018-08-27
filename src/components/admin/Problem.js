@@ -1,12 +1,13 @@
 import React, {Component} from 'react';
-import { Redirect } from 'react-router-dom'
+import axios from 'axios';
+import { Redirect, Link } from 'react-router-dom'
 import { connect } from 'react-redux';
+
+import { BASE_URL, API_PROBLEM_URL } from "../../URL";
 import './Problem.css'
 
-var pageTypes = new Array("문제", "스토리");
 var classTypes = new Array("전기", "후기");
 var problemTypes = new Array("가", "나");
-var inputPageType = pageTypes[0];
 var inputNum = '';
 var inputClassType = classTypes[0];
 var inputProblemType = problemTypes[0];
@@ -18,18 +19,19 @@ class Problem extends Component {
     constructor(props) {
         super(props);
         this.valid = this.valid.bind(this);
-        this.addPage = this.addPage.bind(this);
-        this.deletePage = this.deletePage.bind(this);
+        this.addProblem = this.addProblem.bind(this);
+        this.deleteProblem = this.deleteProblem.bind(this);
         this.getHeader = this.getHeader.bind(this);
-        this.makeData = this.makeData.bind(this);
+        this.getRow = this.getRow.bind(this);
         this.getHints = this.getHints.bind(this);
-        this.getDatas = this.getDatas.bind(this);
+        this.getRows = this.getRows.bind(this);
         this.getTable = this.getTable.bind(this);
         this.getTableTitle = this.getTableTitle.bind(this);
         this.getTables = this.getTables.bind(this);
         this.state={
-            tables: this.getTables(),
+            tables: '',
         }
+        this.getTables();
     }
 
     valid(){
@@ -38,22 +40,37 @@ class Problem extends Component {
         return (userId!=undefined && isAdmin!=undefined && userId!=="" && isAdmin);
     }
 
-    addPage(){
-        console.log(inputPageType);
-        console.log(inputNum);
-        console.log(inputClassType);
-        console.log(inputProblemType);
-        console.log(inputFile);
+    addProblem(){
+        var formData = new FormData();
+        formData.append('num', inputNum);
+        formData.append('answer', inputAnswer);
+        formData.append('classType', inputClassType);
+        formData.append('problemType', inputProblemType);
+        formData.append('hint1', inputHints[0]);
+        formData.append('hint2', inputHints[1]);
+        formData.append('hint3', inputHints[2]);
+        formData.append('file', inputFile);
+
+        axios.post(API_PROBLEM_URL, formData)
+            .then( response => {
+                var data = response.data;
+                if (data.result == 0) { alert(data.error); }
+                else { this.getTables(); }
+            })
+            .catch( response => { alert(response) } );
     }
 
-    deletePage(classType, problemType, k){
-        console.log('delete');
-        console.log(classType, problemType, k);
-    }
-
-    showPage(classType, problemType, k){
-        console.log('show');
-        console.log(classType, problemType, k);
+    deleteProblem(fileURL){
+        const array = fileURL.split("/");
+        const fileName = array[array.length - 1];
+;
+        axios.delete(API_PROBLEM_URL + "/" + fileName)
+            .then( response => {
+                var data = response.data;
+                if (data.result == 0) { alert(data.error); }
+                else { this.getTables(); }
+            })
+            .catch( response => { alert(response) } );
     }
 
     getHeader(){
@@ -68,45 +85,50 @@ class Problem extends Component {
         return (<tr>{header}</tr>);
     }
 
-    getHints(){
-        var hints = [];
-        for (var i=0; i<3;i ++){
-            hints.push(<p style={{margin: '0'}}>sdfsddfssfdsdsdf</p>);
+    getHints(hints){
+        var result = [];
+
+        for (var i=0; i<hints.length; i++){
+            result.push(<p style={{margin: '0'}}>{ hints[i] }</p>);
         }
-        return (<div style={{display: 'flex', flexDirection: 'column'}}>{hints}</div>);
+        return (<div style={{display: 'flex', flexDirection: 'column'}}>{ result }</div>);
     }
 
-    makeData(classType, problemType, k){
+    getRow(problemData){
+        const { num, answer, hints, fileURL } = problemData;
+
         return (<tr>
-            <th>{k+1}</th>
-            <th style={styles.button} onClick={() => this.showPage(classType, problemType, k+1)}>
-                Show
+            <th>{ num }</th>
+            <th style={styles.showButton}>
+                <a href={ BASE_URL + fileURL } style={{textDecoration: 'none', color: 'white', width: '100%', height: '100%'}}>
+                    Show
+                </a>
             </th>
-            <th>{"answer" + String(k+1)}</th>
-            <th>{this.getHints()}</th>
-            <th style={styles.button} onClick={() => this.deletePage(classType, problemType, k+1)}>
+            <th>{ answer }</th>
+            <th>{ this.getHints(hints) }</th>
+            <th style={styles.button} onClick={() => this.deleteProblem(fileURL)}>
                 Delete
             </th>
         </tr>);
     }
 
-    getDatas(classType, problemType){
-        var datas = [];
+    getRows(problemsData){
+        var rows = [];
 
-        for (var k=0; k<10; k++) {
-            datas.push(this.makeData(classType, problemType, k))
+        for (var i=0; i<problemsData.length; i++) {
+            rows.push(this.getRow(problemsData[i]));
         }
 
-        return datas;
+        return rows;
     }
 
-    getTable(classType, problemType){
+    getTable(problemsData){
         var table = [];
         var header = this.getHeader();
-        var datas = this.getDatas(classType, problemType);
+        var rows = this.getRows(problemsData);
 
         table.push(header);
-        table.push(datas);
+        table.push(rows);
 
         return table;
     }
@@ -121,22 +143,46 @@ class Problem extends Component {
 
     getTables(){
         var tables = [];
-        var classTables = [];
 
-        for (var classType in classTypes){
-            for (var problemType in problemTypes){
-                classTables.push(
-                    <div style={styles.table}>
-                        {this.getTableTitle(classType, problemType)}
-                        <div>{this.getTable(classType, problemType)}</div>
-                    </div>
-                );
-            }
-            tables.push(<div style={styles.classTables}>{classTables}</div>);
-            classTables = [];
-        }
+        axios.get(API_PROBLEM_URL)
+            .then( response => {
+                var data = response.data;
+                if (data.result == 0) { alert(data.error); }
+                else {
+                    var cnt = 0;
+                    var problemsData = data.problems;
 
-        return (<div style={styles.tables}>{tables}</div>);
+                    for (var classType in classTypes){
+                        var classTables = [];
+
+                        for (var problemType in problemTypes){
+                            var begin = cnt;
+                            while (cnt < problemsData.length &&
+                            problemsData[cnt].classType == classTypes[classType] &&
+                            problemsData[cnt].problemType == problemTypes[problemType]){
+                                ++cnt;
+                            }
+                            var end = cnt;
+
+                            var tableTitle = this.getTableTitle(classType, problemType);
+                            var table = this.getTable(problemsData.slice(begin, end));
+
+                            classTables.push(
+                                <div style={styles.table}>
+                                    { tableTitle }
+                                    <div>{ table }</div>
+                                </div>
+                            );
+                        }
+                        tables.push(<div style={styles.classTables}>{ classTables }</div>);
+                    }
+
+                    this.setState({
+                       tables: tables
+                    });
+                }
+            })
+            .catch( response => { alert(response) } );
     }
 
     render() {
@@ -175,7 +221,7 @@ class Problem extends Component {
                                    onChange={(event) => {inputHints[2] = event.target.value}}/>
                         </div>
                     </div>
-                    <h3 onClick={this.addPage} style={styles.button}>+ add</h3>
+                    <h3 onClick={this.addProblem} style={styles.button}>+ add</h3>
                 </div>
                 {this.state.tables}
             </div>
@@ -238,6 +284,11 @@ const styles = {
         textAlign: 'center',
         textDecoration: 'underline',
         cursor: 'pointer',
+        alignSelf: 'center',
+    },
+    showButton: {
+        textAlign: 'center',
+        textDecoration: 'underline',
         alignSelf: 'center',
     },
 };
