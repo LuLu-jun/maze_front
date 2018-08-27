@@ -1,6 +1,9 @@
 import React, {Component} from 'react';
+import axios from 'axios';
 import { Redirect } from 'react-router-dom'
 import { connect } from 'react-redux';
+
+import { BASE_URL, API_STORY_URL } from "../../URL";
 import './Story.css'
 
 var classTypes = new Array("전기", "후기");
@@ -15,14 +18,15 @@ class Story extends Component {
         this.addStory = this.addStory.bind(this);
         this.deleteStory = this.deleteStory.bind(this);
         this.getHeader = this.getHeader.bind(this);
-        this.makeData = this.makeData.bind(this);
-        this.getDatas = this.getDatas.bind(this);
+        this.getRow = this.getRow.bind(this);
+        this.getRows = this.getRows.bind(this);
         this.getTable = this.getTable.bind(this);
         this.getTableTitle = this.getTableTitle.bind(this);
         this.getTables = this.getTables.bind(this);
         this.state={
-            tables: this.getTables(),
+            tables: '',
         }
+        this.getTables();
     }
 
     valid(){
@@ -32,19 +36,31 @@ class Story extends Component {
     }
 
     addStory(){
-        console.log(inputNum);
-        console.log(inputClassType);
-        console.log(inputFile);
+        var formData = new FormData();
+        formData.append('num', inputNum);
+        formData.append('classType', inputClassType);
+        formData.append('file', inputFile);
+
+        axios.post(API_STORY_URL, formData)
+            .then( response => {
+                var data = response.data;
+                if (data.result == 0) { alert(data.error); }
+                else { this.getTables(); }
+            })
+            .catch( response => { alert(response) } );
     }
 
-    deleteStory(classType, num){
-        console.log('delete');
-        console.log(classType, num);
-    }
+    deleteStory(fileURL){
+        const array = fileURL.split("/");
+        const fileName = array[array.length - 1];
 
-    showStory(classType, num){
-        console.log('show');
-        console.log(classType, num);
+        axios.delete(API_STORY_URL + "/" + fileName)
+            .then( response => {
+                var data = response.data;
+                if (data.result == 0) { alert(data.error); }
+                else { this.getTables(); }
+            })
+            .catch( response => { alert(response) } );
     }
 
     getHeader(){
@@ -57,35 +73,39 @@ class Story extends Component {
         return (<tr>{header}</tr>);
     }
 
-    makeData(classType, k){
+    getRow(storyData){
+        const { num, fileURL } = storyData;
+
         return (<tr>
-            <th>{k+1}</th>
-            <th style={styles.button} onClick={() => this.showStory(classType, k+1)}>
-                Show
+            <th>{ num }</th>
+            <th style={styles.showButton}>
+                <a href={ BASE_URL + fileURL } style={{textDecoration: 'none', color: 'white', width: '100%', height: '100%'}}>
+                    Show
+                </a>
             </th>
-            <th style={styles.button} onClick={() => this.deleteStory(classType, k+1)}>
+            <th style={styles.button} onClick={() => this.deleteStory(fileURL)}>
                 Delete
             </th>
         </tr>);
     }
 
-    getDatas(classType){
-        var datas = [];
+    getRows(storiesData){
+        var rows = [];
 
-        for (var k=0; k<10; k++) {
-            datas.push(this.makeData(classType, k))
+        for (var i=0; i<storiesData.length; i++) {
+            rows.push(this.getRow(storiesData[i]));
         }
 
-        return datas;
+        return rows;
     }
 
-    getTable(classType){
+    getTable(storiesData){
         var table = [];
         var header = this.getHeader();
-        var datas = this.getDatas(classType);
+        var rows = this.getRows(storiesData);
 
         table.push(header);
-        table.push(datas);
+        table.push(rows);
 
         return table;
     }
@@ -99,16 +119,36 @@ class Story extends Component {
     getTables(){
         var tables = [];
 
-        for (var classType in classTypes){
-            tables.push(
-                <div style={styles.table}>
-                    {this.getTableTitle(classType)}
-                    <div>{this.getTable(classType)}</div>
-                </div>
-            );
-        }
+        axios.get(API_STORY_URL)
+            .then( response => {
+                var data = response.data;
+                if (data.result == 0) { alert(data.error); }
+                else {
+                    var cnt = 0;
+                    var storiesData = data.stories;
 
-        return (<div style={styles.tables}>{tables}</div>);
+                    for (var classType in classTypes){
+                        var begin = cnt;
+                        while (cnt < storiesData.length &&
+                        storiesData[cnt].classType == classTypes[classType]){
+                            ++cnt;
+                        }
+                        var end = cnt;
+
+                        tables.push(
+                            <div style={styles.table}>
+                                { this.getTableTitle(classType) }
+                                <div>{ this.getTable(storiesData.slice(begin, end)) }</div>
+                            </div>
+                        );
+                    }
+
+                    this.setState({
+                        tables: tables
+                    });
+                }
+            })
+            .catch( response => { alert(response) } );
     }
 
     render() {
@@ -131,7 +171,9 @@ class Story extends Component {
                            onChange={(event) => {inputFile = event.target.files[0]}}/>
                     <h3 onClick={this.addStory} style={styles.button}>+ add</h3>
                 </div>
-                {this.state.tables}
+                <div style={styles.tables}>
+                    {this.state.tables}
+                </div>
             </div>
         );
     }
@@ -180,6 +222,10 @@ const styles = {
         marginBottom: '5px',
     },
     button: {
+        textDecoration: 'underline',
+        cursor: 'pointer',
+    },
+    showButton: {
         textDecoration: 'underline',
         cursor: 'pointer',
     },
