@@ -1,89 +1,134 @@
 import React, {Component} from 'react';
-import { Redirect } from 'react-router-dom'
-import { connect } from 'react-redux';
+import axios from 'axios';
+import { Redirect } from 'react-router-dom';
+import { withCookies } from 'react-cookie';
 
-import yellowCard from '../../yellowCard.png'
+import { API_PROGRESS_URL } from "../../URL";
+import yellowCard from '../../yellowCard.png';
+import './Progress.css';
 
-import './Progress.css'
-
-function getHeader(){
-    var header = [];
-
-    header.push(<th>Class</th>);
-    header.push(<th>Problem 1</th>);
-    header.push(<th>Problem 2</th>);
-    header.push(<th>Problem 3</th>);
-    header.push(<th>Problem 4</th>);
-    header.push(<th>Problem 5</th>);
-    header.push(<th>Problem 6</th>);
-    header.push(<th>Problem 7</th>);
-    header.push(<th>Problem 8</th>);
-    header.push(<th>Problem 9</th>);
-    header.push(<th>Yellow card</th>);
-
-    return (<tr>{header}</tr>);
-}
-
-function getYellowCard(num){
-    var cards = [];
-    for (var i=0; i<num; i++){
-        cards.push(<img src={yellowCard} style={{width: '12px'}} />);
-    }
-    return (<div style={styles.cards}>{cards}</div>);
-}
-
-function makeData(i){
-    return (<tr>
-        <th>{i+1}</th>
-        <th>11:22:33</th>
-        <th>11:22:33</th>
-        <th>11:22:33</th>
-        <th>11:22:33</th>
-        <th>11:22:33</th>
-        <th>11:22:33</th>
-        <th>11:22:33</th>
-        <th>11:22:33</th>
-        <th>11:22:33</th>
-        <th>{getYellowCard(i%3)}</th>
-    </tr>);
-}
-
-function getDatas(){
-    var datas = [];
-
-    for (var i=0; i<30; i++) {
-        datas.push(makeData(i))
-    }
-
-    return datas;
-}
-
-function getTable(){
-    var table = [];
-    var header = getHeader();
-    var datas = getDatas();
-
-    table.push(header);
-    table.push(datas);
-
-    return table;
-}
+var REAL_API_URL = '';
 
 class Progress extends Component {
     constructor(props) {
         super(props);
-        this.valid = this.valid.bind(this);
-        this.table = getTable();
+
+        const cookieId = this.props.cookies.get('id') || '';
+        const cookiePwd = this.props.cookies.get('pwd') || '';
+        REAL_API_URL = API_PROGRESS_URL + "/" + cookieId + "/" + cookiePwd;
+
+        var validAccess = true;
+        if (cookieId == '' || cookiePwd == '') { validAccess = false; }
+
+        this.getHeader = this.getHeader.bind(this);
+        this.getTime = this.getTime.bind(this);
+        this.getProgress = this.getProgress.bind(this);
+        this.getYellowCard = this.getYellowCard.bind(this);
+        this.getRow = this.getRow.bind(this);
+        this.getRows = this.getRows.bind(this);
+        this.getTable = this.getTable.bind(this);
+        this.state={
+            validAccess: validAccess,
+            table: '',
+        };
+        if (validAccess)
+            this.getTable();
     }
 
-    valid(){
-        const userId = this.props.userId;
-        const isAdmin = this.props.isAdmin;
-        return (userId!=undefined && isAdmin!=undefined && userId!=="" && isAdmin);
+    getHeader(problemNum){
+        var header = [];
+
+        header.push(<th>Class</th>);
+        for (var i=1; i<=problemNum; i++){
+            header.push(<th>{"Problem " + String(i)}</th>);
+        }
+        header.push(<th>Yellow card</th>);
+
+        return (<tr>{header}</tr>);
+    }
+
+    getTime(begin, end){
+        if (begin == -1){
+            return '00:00:00';
+        }
+        if (end == -1){
+            return '??:??:??';
+        }
+        return end;
+    }
+
+    getProgress(progress){
+        var progressArray = [];
+
+        for (var i=0; i<9; i++){
+            const {begin, end} = progress[i];
+            console.log(begin, end);
+            progressArray.push(<th>{ this.getTime (begin, end) }</th>);
+        }
+
+        return progressArray;
+    }
+
+    getYellowCard(num){
+        var cards = [];
+        for (var i=0; i<num; i++){
+            cards.push(<img src={yellowCard} style={{width: '12px'}} />);
+        }
+        return (<div style={styles.cards}>{cards}</div>);
+    }
+
+    getRow(progressData){
+        const { classNum, progress, warningNum } = progressData;
+
+        return (<tr>
+            <th>{ classNum }</th>
+            { this.getProgress(progress) }
+            <th>{ this.getYellowCard(warningNum) }</th>
+        </tr>);
+    }
+
+    getRows(progressesData){
+        var rows = [];
+
+        for (var i=0; i<progressesData.length; i++){
+            rows.push(this.getRow(progressesData[i]));
+        }
+
+        return rows;
+    }
+
+    getTable(){
+        var table = [];
+
+        axios.get(REAL_API_URL)
+            .then( response => {
+                const data = response.data;
+
+                if (data.result == 0) {
+                    alert(data.error);
+                    this.setState({
+                        validAccess: false,
+                    });
+                }
+                else {
+                    var header = this.getHeader(9);
+                    var datas = this.getRows(data.progresses);
+
+                    table.push(header);
+                    table.push(datas);
+
+                    this.setState({
+                        validAccess: true,
+                        table: table,
+                    });
+                }
+            })
+
+        return table;
     }
 
     render() {
-        if (!this.valid()){
+        if (!this.state.validAccess){
             return (
                 <Redirect to="/" />
             );
@@ -91,17 +136,10 @@ class Progress extends Component {
 
         return (
             <div className="container" style={styles.container}>
-                <table>{this.table}</table>
+                <table>{this.state.table}</table>
             </div>
         );
     }
-}
-
-var mapStateToProps = (state) => {
-    return ({
-        userId: state.login.userId,
-        isAdmin: state.login.isAdmin,
-    });
 }
 
 const styles = {
@@ -121,4 +159,4 @@ const styles = {
     },
 };
 
-export default connect(mapStateToProps)(Progress);
+export default withCookies(Progress);

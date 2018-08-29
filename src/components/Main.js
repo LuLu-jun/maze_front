@@ -11,8 +11,8 @@ class Main extends Component {
     }
 
     checkLogin(){
-        const userId = this.props.userId;
-        return (userId !== "");
+        const id = this.props.id;
+        return (id != "");
     }
 
     isAdmin(userId){
@@ -41,7 +41,7 @@ class Main extends Component {
 
 var mapStateToProps = (state) => {
     return ({
-        userId: state.login.userId,
+        id: state.login.id,
         isAdmin: state.login.isAdmin,
     });
 }

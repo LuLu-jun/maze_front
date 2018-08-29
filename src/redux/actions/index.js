@@ -1,18 +1,11 @@
 export const LOGIN = 'LOGIN';
-export const ADMIN_LOGIN = 'ADMIN_LOGIN';
 export const LOGOUT = 'LOGOUT';
 
-export function login(userId) {
+export function login(id, isAdmin) {
     return {
         type: LOGIN,
-        userId: userId,
-    };
-}
-
-export function adminLogin(userId) {
-    return {
-        type: ADMIN_LOGIN,
-        userId: userId,
+        id: id,
+        isAdmin: isAdmin,
     };
 }
 

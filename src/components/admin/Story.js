@@ -1,20 +1,28 @@
 import React, {Component} from 'react';
 import axios from 'axios';
-import { Redirect } from 'react-router-dom'
-import { connect } from 'react-redux';
+import { Redirect } from 'react-router-dom';
+import { withCookies } from 'react-cookie';
 
-import { BASE_URL, API_STORY_URL } from "../../URL";
-import './Story.css'
+import {BASE_URL, API_STORY_URL } from "../../URL";
+import './Story.css';
 
 var classTypes = new Array("전기", "후기");
 var inputNum = '';
 var inputClassType = classTypes[0];
 var inputFile = undefined;
+var REAL_API_URL = '';
 
 class Story extends Component {
     constructor(props) {
         super(props);
-        this.valid = this.valid.bind(this);
+
+        const cookieId = this.props.cookies.get('id') || '';
+        const cookiePwd = this.props.cookies.get('pwd') || '';
+        REAL_API_URL = API_STORY_URL + "/" + cookieId + "/" + cookiePwd;
+
+        var validAccess = true;
+        if (cookieId == '' || cookiePwd == '') { validAccess = false; }
+
         this.addStory = this.addStory.bind(this);
         this.deleteStory = this.deleteStory.bind(this);
         this.getHeader = this.getHeader.bind(this);
@@ -24,15 +32,11 @@ class Story extends Component {
         this.getTableTitle = this.getTableTitle.bind(this);
         this.getTables = this.getTables.bind(this);
         this.state={
+            validAccess: validAccess,
             tables: '',
         }
-        this.getTables();
-    }
-
-    valid(){
-        const userId = this.props.userId;
-        const isAdmin = this.props.isAdmin;
-        return (userId!=undefined && isAdmin!=undefined && userId!=="" && isAdmin);
+        if (validAccess)
+            this.getTables();
     }
 
     addStory(){
@@ -41,10 +45,15 @@ class Story extends Component {
         formData.append('classType', inputClassType);
         formData.append('file', inputFile);
 
-        axios.post(API_STORY_URL, formData)
+        axios.post(REAL_API_URL, formData)
             .then( response => {
                 var data = response.data;
-                if (data.result == 0) { alert(data.error); }
+                if (data.result == 0) {
+                    alert(data.error);
+                    this.setState({
+                        validAccess: false,
+                    });
+                }
                 else { this.getTables(); }
             })
             .catch( response => { alert(response) } );
@@ -54,13 +63,23 @@ class Story extends Component {
         const array = fileURL.split("/");
         const fileName = array[array.length - 1];
 
-        axios.delete(API_STORY_URL + "/" + fileName)
+        axios.delete(REAL_API_URL + "/" + fileName)
             .then( response => {
                 var data = response.data;
-                if (data.result == 0) { alert(data.error); }
+                if (data.result == 0) {
+                    alert(data.error);
+                    this.setState({
+                        validAccess: false,
+                    });
+                }
                 else { this.getTables(); }
             })
-            .catch( response => { alert(response) } );
+            .catch( response => {
+                alert(response);
+                this.setState({
+                    validAccess: false,
+                });
+            });
     }
 
     getHeader(){
@@ -119,10 +138,15 @@ class Story extends Component {
     getTables(){
         var tables = [];
 
-        axios.get(API_STORY_URL)
+        axios.get(REAL_API_URL)
             .then( response => {
                 var data = response.data;
-                if (data.result == 0) { alert(data.error); }
+                if (data.result == 0) {
+                    alert(data.error);
+                    this.setState({
+                        validAccess: false,
+                    });
+                }
                 else {
                     var cnt = 0;
                     var storiesData = data.stories;
@@ -144,15 +168,21 @@ class Story extends Component {
                     }
 
                     this.setState({
-                        tables: tables
+                        tables: tables,
+                        validAccess: true,
                     });
                 }
             })
-            .catch( response => { alert(response) } );
+            .catch( response => {
+                alert(response);
+                this.setState({
+                    validAccess: false,
+                });
+            });
     }
 
     render() {
-        if (!this.valid()){
+        if (!this.state.validAccess){
             return (
                 <Redirect to="/" />
             );
@@ -177,13 +207,6 @@ class Story extends Component {
             </div>
         );
     }
-}
-
-var mapStateToProps = (state) => {
-    return ({
-        userId: state.login.userId,
-        isAdmin: state.login.isAdmin,
-    });
 }
 
 const styles = {
@@ -231,4 +254,4 @@ const styles = {
     },
 };
 
-export default connect(mapStateToProps)(Story);
+export default withCookies(Story);

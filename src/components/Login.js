@@ -1,13 +1,15 @@
 import React, {Component} from 'react';
+import axios from 'axios';
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 import { withCookies } from 'react-cookie';
 
-import { login, adminLogin } from '../redux/actions'
+import { login } from '../redux/actions'
+import { API_LOGIN_URL } from "../URL";
 import './Login.css';
 
-var id = ''
-var pwd = ''
+var id = '';
+var pwd = '';
 
 class Login extends Component {
     constructor(props) {
@@ -18,7 +20,7 @@ class Login extends Component {
         };
         this.onKeyPress = this.onKeyPress.bind(this);
         this.tryLogin = this.tryLogin.bind(this);
-        this.loginWithCookie = this.loginWithCookie.bind(this);
+        this.tryLogin();
     }
 
     onKeyPress(event){
@@ -28,27 +30,37 @@ class Login extends Component {
     }
 
     tryLogin() {
-        if (id == '') { return; }
+        const cookieId = this.props.cookies.get('id') || '';
+        const cookiePwd = this.props.cookies.get('pwd') || '';
 
-        if (id === "admin") {
-            this.props.adminLoginSuccess(id);
-            this.props.cookies.set('isAdmin', true, {path: '/login'});
+        if (id == '' && pwd ==''){
+            if (cookieId == '' && cookiePwd == '') { return; }
+            id = cookieId;
+            pwd = cookiePwd;
         }
-        else {
-            this.props.loginSuccess(id);
-            this.props.cookies.set('isAdmin', false, {path: '/login'});
-        }
-        this.props.cookies.set('userId', id, {path: '/'});
-        id = this.props.cookies.get('userId') || '';
 
-        this.setState({
-            redirect: true,
-        });
-    }
+        axios.post(API_LOGIN_URL, {
+            id: id,
+            pwd: pwd,
+        })
+            .then( response => {
+                var data = response.data;
+                if (data.result == 0) { alert(data.error); }
+                else {
+                    const isAdmin = data.isAdmin;
+                    this.props.loginSuccess(id, pwd, isAdmin);
+                    this.props.cookies.set('id', id, {path: '/'});
+                    this.props.cookies.set('pwd', pwd, {path: '/'});
 
-    loginWithCookie() {
-        id = this.props.cookies.get('userId') || '';
-        this.tryLogin();
+                    id = '';
+                    pwd = '';
+
+                    this.setState({
+                        redirect: true,
+                    });
+                }
+            })
+            .catch( response => { alert(response); });
     }
 
     render() {
@@ -57,7 +69,6 @@ class Login extends Component {
                 <Redirect to="/" />
             );
         }
-        this.loginWithCookie();
 
         return (
             <div className="container" style={styles.containerStyle}>
@@ -80,17 +91,9 @@ class Login extends Component {
     }
 }
 
-var mapStateToProps = (state) => {
-    return ({
-        userId: state.login.userId,
-        isAdmin: state.login.isAdmin,
-    });
-}
-
 var mapDispatchToProps = (dispatch) => {
     return ({
-        loginSuccess: (userId) => dispatch(login(userId)),
-        adminLoginSuccess: (userId) => dispatch(adminLogin(userId)),
+        loginSuccess: (id, isAdmin) => dispatch(login(id, isAdmin)),
     });
 }
 
@@ -134,4 +137,4 @@ const styles = {
     }
 };
 
-export default withCookies(connect(mapStateToProps, mapDispatchToProps)(Login));
+export default withCookies(connect(undefined, mapDispatchToProps)(Login));

@@ -1,10 +1,10 @@
 import React, {Component} from 'react';
 import axios from 'axios';
-import { Redirect, Link } from 'react-router-dom'
-import { connect } from 'react-redux';
+import { Redirect } from 'react-router-dom';
+import { withCookies } from 'react-cookie';
 
 import { BASE_URL, API_PROBLEM_URL } from "../../URL";
-import './Problem.css'
+import './Problem.css';
 
 var classTypes = new Array("전기", "후기");
 var problemTypes = new Array("가", "나");
@@ -14,11 +14,19 @@ var inputProblemType = problemTypes[0];
 var inputFile = undefined;
 var inputAnswer = "";
 var inputHints = new Array("", "", "");
+var REAL_API_URL = '';
 
 class Problem extends Component {
     constructor(props) {
         super(props);
-        this.valid = this.valid.bind(this);
+
+        const cookieId = this.props.cookies.get('id') || '';
+        const cookiePwd = this.props.cookies.get('pwd') || '';
+        REAL_API_URL = API_PROBLEM_URL + "/" + cookieId + "/" + cookiePwd;
+
+        var validAccess = true;
+        if (cookieId == '' || cookiePwd == '') { validAccess = false; }
+
         this.addProblem = this.addProblem.bind(this);
         this.deleteProblem = this.deleteProblem.bind(this);
         this.getHeader = this.getHeader.bind(this);
@@ -29,15 +37,11 @@ class Problem extends Component {
         this.getTableTitle = this.getTableTitle.bind(this);
         this.getTables = this.getTables.bind(this);
         this.state={
+            validAccess: validAccess,
             tables: '',
         }
-        this.getTables();
-    }
-
-    valid(){
-        const userId = this.props.userId;
-        const isAdmin = this.props.isAdmin;
-        return (userId!=undefined && isAdmin!=undefined && userId!=="" && isAdmin);
+        if (validAccess)
+            this.getTables();
     }
 
     addProblem(){
@@ -51,26 +55,46 @@ class Problem extends Component {
         formData.append('hint3', inputHints[2]);
         formData.append('file', inputFile);
 
-        axios.post(API_PROBLEM_URL, formData)
+        axios.post(REAL_API_URL, formData)
             .then( response => {
                 var data = response.data;
-                if (data.result == 0) { alert(data.error); }
+                if (data.result == 0) {
+                    alert(data.error);
+                    this.setState({
+                       validAccess: false,
+                    });
+                }
                 else { this.getTables(); }
             })
-            .catch( response => { alert(response) } );
+            .catch( response => {
+                alert(response);
+                this.setState({
+                    validAccess: false,
+                });
+            });
     }
 
     deleteProblem(fileURL){
         const array = fileURL.split("/");
         const fileName = array[array.length - 1];
 ;
-        axios.delete(API_PROBLEM_URL + "/" + fileName)
+        axios.delete(REAL_API_URL + "/" + fileName)
             .then( response => {
                 var data = response.data;
-                if (data.result == 0) { alert(data.error); }
+                if (data.result == 0) {
+                    alert(data.error);
+                    this.setState({
+                        validAccess: false,
+                    });
+                }
                 else { this.getTables(); }
             })
-            .catch( response => { alert(response) } );
+            .catch( response => {
+                alert(response);
+                this.setState({
+                    validAccess: false,
+                });
+            });
     }
 
     getHeader(){
@@ -144,10 +168,15 @@ class Problem extends Component {
     getTables(){
         var tables = [];
 
-        axios.get(API_PROBLEM_URL)
+        axios.get(REAL_API_URL)
             .then( response => {
                 var data = response.data;
-                if (data.result == 0) { alert(data.error); }
+                if (data.result == 0) {
+                    alert(data.error);
+                    this.setState({
+                        validAccess: false,
+                    });
+                }
                 else {
                     var cnt = 0;
                     var problemsData = data.problems;
@@ -178,15 +207,21 @@ class Problem extends Component {
                     }
 
                     this.setState({
-                       tables: tables
+                       tables: tables,
+                        validAccess: true,
                     });
                 }
             })
-            .catch( response => { alert(response) } );
+            .catch( response => {
+                alert(response);
+                this.setState({
+                    validAccess: false,
+                });
+            });
     }
 
     render() {
-        if (!this.valid()){
+        if (!this.state.validAccess){
             return (
                 <Redirect to="/" />
             );
@@ -227,13 +262,6 @@ class Problem extends Component {
             </div>
         );
     }
-}
-
-var mapStateToProps = (state) => {
-    return ({
-        userId: state.login.userId,
-        isAdmin: state.login.isAdmin,
-    });
 }
 
 const styles = {
@@ -293,4 +321,4 @@ const styles = {
     },
 };
 
-export default connect(mapStateToProps)(Problem);
+export default withCookies(Problem);

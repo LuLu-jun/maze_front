@@ -1,8 +1,8 @@
-import { LOGIN, ADMIN_LOGIN, LOGOUT } from '../actions';
+import { LOGIN, LOGOUT } from '../actions';
 import { combineReducers } from 'redux';
 
 const initialState = {
-    userId: '',
+    id: '',
     isAdmin: false,
 };
 
@@ -10,17 +10,12 @@ const loginReducer = (state = initialState, action) => {
     switch(action.type){
         case LOGIN:
             return Object.assign({}, state, {
-                userId: action.userId,
-                isAdmin: false,
-            });
-        case ADMIN_LOGIN:
-            return Object.assign({}, state, {
-                userId: action.userId,
-                isAdmin: true,
+                id: action.id,
+                isAdmin: action.isAdmin,
             });
         case LOGOUT:
             return Object.assign({}, state, {
-                userId: '',
+                id: '',
                 isAdmin: false,
             });
         default:

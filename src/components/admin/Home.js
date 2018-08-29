@@ -14,14 +14,17 @@ class Home extends Component {
     }
 
     valid(){
-        const userId = this.props.userId;
         const isAdmin = this.props.isAdmin;
-        return (userId!=undefined && isAdmin!=undefined && userId!=="" && isAdmin);
+        return isAdmin;
     }
 
     logout(){
-        this.props.cookies.remove('userId', {path: '/'});
-        this.props.cookies.remove('isAdmin', {path: '/'});
+        this.props.cookies.remove('id', {path: '/'});
+        this.props.cookies.remove('pwd', {path: '/'});
+
+        const cookieId = this.props.cookies.get('id') || '';
+        const cookiePwd = this.props.cookies.get('pwd') || '';
+
         this.props.logout();
     }
 
@@ -59,7 +62,6 @@ class Home extends Component {
 
 var mapStateToProps = (state) => {
     return ({
-        userId: state.login.userId,
         isAdmin: state.login.isAdmin,
     });
 }

@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import axios from 'axios'
 import { Redirect } from 'react-router-dom'
-import { connect } from 'react-redux'
+import { withCookies } from 'react-cookie';
 
 import { API_MEMBER_URL } from "../../URL"
 import './Member.css'
@@ -13,11 +13,19 @@ var classTypes = new Array("전기", "후기");
 var classType = classTypes[0];
 var problemTypes='';
 var hintCodes = new Array("", "", "");
+var REAL_API_URL = '';
 
 class Member extends Component {
     constructor(props) {
         super(props);
-        this.valid = this.valid.bind(this);
+
+        const cookieId = this.props.cookies.get('id') || '';
+        const cookiePwd = this.props.cookies.get('pwd') || '';
+        REAL_API_URL = API_MEMBER_URL + "/" + cookieId + "/" + cookiePwd;
+
+        var validAccess = true;
+        if (cookieId == '' || cookiePwd == '') { validAccess = false; }
+
         this.addMember = this.addMember.bind(this);
         this.deleteMember = this.deleteMember.bind(this);
         this.getHeader = this.getHeader.bind(this);
@@ -26,19 +34,15 @@ class Member extends Component {
         this.getRows = this.getRows.bind(this);
         this.getTable = this.getTable.bind(this);
         this.state={
+            validAccess: validAccess,
             table: '',
         }
-        this.getTable();
-    }
-
-    valid(){
-        const userId = this.props.userId;
-        const isAdmin = this.props.isAdmin;
-        return (userId!=undefined && isAdmin!=undefined && userId!=="" && isAdmin);
+        if (validAccess)
+            this.getTable();
     }
 
     addMember(){
-        axios.post(API_MEMBER_URL, {
+        axios.post(REAL_API_URL, {
             classNum: classNum,
             id: id,
             pwd: pwd,
@@ -48,20 +52,40 @@ class Member extends Component {
         })
             .then( response => {
                 var data = response.data;
-                if (data.result == 0) { alert(data.error); }
-                else { this.getTable(); }
+                if (data.result == 1) { this.getTable(); }
+                else {
+                    alert(data.error);
+                    this.setState({
+                        validAccess: false,
+                    });
+                }
             })
-            .catch( response => { alert(response) } );
+            .catch( response => {
+                alert(response);
+                this.setState({
+                    validAccess: false,
+                });
+            });
     }
 
     deleteMember(classNum){
-        axios.delete(API_MEMBER_URL + "/" + String(classNum))
+        axios.delete(REAL_API_URL + "/" + String(classNum))
             .then( response => {
                 var data = response.data;
-                if (data.result == 0) { alert(data.error); }
-                else { this.getTable(); }
+                if (data.result == 1) { this.getTable(); }
+                else {
+                    alert(data.error);
+                    this.setState({
+                        validAccess: false
+                    });
+                }
             })
-            .catch( response => { alert(response) } );
+            .catch( response => {
+                alert(response);
+                this.setState({
+                    validAccess: false,
+                });
+            });
     }
 
     getHeader(){
@@ -117,25 +141,37 @@ class Member extends Component {
         var table = [];
         var header = this.getHeader();
 
-        axios.get(API_MEMBER_URL)
+        axios.get(REAL_API_URL)
             .then( response => {
                 var data = response.data;
-                if (data.result == 0) { alert(data.error); }
+                if (data.result == 0) {
+                    alert(data.error);
+                    this.setState({
+                        validAccess: false,
+                    });
+                }
                 else {
                     var membersData = response.data.members;
                     var elements = this.getRows(membersData);
                     table.push(header);
                     table.push(elements);
                     this.setState({
-                        table: table
+                        table: table,
+                        validAccess: true,
                     });
                 }
             })
-            .catch( response => { alert(response) } );
+            .catch( response => {
+                alert(response);
+                this.setState({
+                    table: table,
+                    validAccess: false,
+                });
+            } );
     }
 
     render() {
-        if (!this.valid()){
+        if (!this.state.validAccess){
             return (
                 <Redirect to="/" />
             );
@@ -176,13 +212,6 @@ class Member extends Component {
     }
 }
 
-var mapStateToProps = (state) => {
-    return ({
-        userId: state.login.userId,
-        isAdmin: state.login.isAdmin,
-    });
-}
-
 const styles = {
     container: {
         display: 'flex',
@@ -211,4 +240,4 @@ const styles = {
     },
 };
 
-export default connect(mapStateToProps)(Member);
+export default withCookies(Member);
