@@ -51,17 +51,21 @@ class Home extends Component {
         this.valid = this.valid.bind(this);
         this.logout = this.logout.bind(this);
         this.recentPage = {type : "problem", number : 6};
+        this.state = {
+            validAccess: true,
+        };
     }
 
     valid(){
-        const userId = this.props.userId;
+        const id = this.props.id;
         const isAdmin = this.props.isAdmin;
-        return (userId!=undefined && isAdmin!=undefined && userId!=="" && !isAdmin);
+
+        return (id!='' && !isAdmin);
     }
 
     logout(){
-        this.props.cookies.remove('userId', {path: '/'});
-        this.props.cookies.remove('isAdmin', {path: '/'});
+        this.props.cookies.remove('id', {path: '/'});
+        this.props.cookies.remove('pwd', {path: '/'});
         this.props.logout();
     }
 
@@ -119,7 +123,7 @@ const styles = {
 
 var mapStateToProps = (state) => {
     return ({
-        userId: state.login.userId,
+        id: state.login.id,
         isAdmin: state.login.isAdmin,
     });
 }

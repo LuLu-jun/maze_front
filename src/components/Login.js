@@ -48,7 +48,7 @@ class Login extends Component {
                 if (data.result == 0) { alert(data.error); }
                 else {
                     const isAdmin = data.isAdmin;
-                    this.props.loginSuccess(id, pwd, isAdmin);
+                    this.props.loginSuccess(id, isAdmin);
                     this.props.cookies.set('id', id, {path: '/'});
                     this.props.cookies.set('pwd', pwd, {path: '/'});
 
