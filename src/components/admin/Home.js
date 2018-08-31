@@ -21,10 +21,6 @@ class Home extends Component {
     logout(){
         this.props.cookies.remove('id', {path: '/'});
         this.props.cookies.remove('pwd', {path: '/'});
-
-        const cookieId = this.props.cookies.get('id') || '';
-        const cookiePwd = this.props.cookies.get('pwd') || '';
-
         this.props.logout();
     }
 
