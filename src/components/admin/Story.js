@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Redirect } from 'react-router-dom';
 import { withCookies } from 'react-cookie';
 
-import {BASE_URL, API_STORY_URL } from "../../URL";
+import { BASE_URL, API_ADMIN_STORY_URL } from "../../URL";
 import './Story.css';
 
 var classTypes = new Array("전기", "후기");
@@ -18,7 +18,7 @@ class Story extends Component {
 
         const cookieId = this.props.cookies.get('id') || '';
         const cookiePwd = this.props.cookies.get('pwd') || '';
-        REAL_API_URL = API_STORY_URL + "/" + cookieId + "/" + cookiePwd;
+        REAL_API_URL = API_ADMIN_STORY_URL + "/" + cookieId + "/" + cookiePwd;
 
         var validAccess = true;
         if (cookieId == '' || cookiePwd == '') { validAccess = false; }

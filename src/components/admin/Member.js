@@ -3,7 +3,7 @@ import axios from 'axios'
 import { Redirect } from 'react-router-dom'
 import { withCookies } from 'react-cookie';
 
-import { API_MEMBER_URL } from "../../URL"
+import { API_ADMIN_MEMBER_URL } from "../../URL"
 import './Member.css'
 
 var classNum='';
@@ -21,7 +21,7 @@ class Member extends Component {
 
         const cookieId = this.props.cookies.get('id') || '';
         const cookiePwd = this.props.cookies.get('pwd') || '';
-        REAL_API_URL = API_MEMBER_URL + "/" + cookieId + "/" + cookiePwd;
+        REAL_API_URL = API_ADMIN_MEMBER_URL + "/" + cookieId + "/" + cookiePwd;
 
         var validAccess = true;
         if (cookieId == '' || cookiePwd == '') { validAccess = false; }
