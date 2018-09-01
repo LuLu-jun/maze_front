@@ -1,10 +1,14 @@
 import React, {Component} from 'react';
+import axios from 'axios';
 import { Link, Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { withCookies } from 'react-cookie';
 
-import { logout } from '../redux/actions'
-import './Home.css'
+import { API_HOME_URL } from "../URL";
+import { logout } from '../redux/actions';
+import './Home.css';
+
+var REAL_API_URL = '';
 
 function recentPageLink(recentPage){
     const { type, number } = recentPage;
@@ -48,19 +52,22 @@ class Home extends Component {
     constructor(props) {
         super(props);
 
-        this.valid = this.valid.bind(this);
+        const cookieId = this.props.cookies.get('id') || '';
+        const cookiePwd = this.props.cookies.get('pwd') || '';
+        REAL_API_URL = API_HOME_URL + "/" + cookieId + "/" + cookiePwd;
+
+        var validAccess = true;
+        if (cookieId == '' || cookiePwd == '') { validAccess = false; }
+
         this.logout = this.logout.bind(this);
-        this.recentPage = {type : "problem", number : 6};
+        this.getData = this.getData.bind(this);
+        this.isStart = this.isStart.bind(this);
         this.state = {
-            validAccess: true,
+            validAccess: validAccess,
+            data: undefined,
         };
-    }
-
-    valid(){
-        const id = this.props.id;
-        const isAdmin = this.props.isAdmin;
-
-        return (id!='' && !isAdmin);
+        if (validAccess)
+            this.getData();
     }
 
     logout(){
@@ -69,24 +76,69 @@ class Home extends Component {
         this.props.logout();
     }
 
+    getData(){
+        axios.get(REAL_API_URL)
+            .then( response => {
+                var data = response.data;
+                if (data.result == 0){
+                    alert(data.error);
+                    this.setState({
+                        validAccess: false,
+                    });
+                }
+                else{
+                    var progress = data.progress;
+                    this.setState({
+                        validAccess: true,
+                        data: {
+                            classNum: progress.classNum,
+                            recentPage: progress.recentPage,
+                        }
+                    });
+                }
+            })
+            .catch( response => {
+                alert(response);
+                this.setState({
+                    validAccess: false,
+                });
+            });
+    }
+
+    isStart(recentPage){
+        if (recentPage.type == "story" && recentPage.number == 1){
+            return true;
+        }
+        return false;
+    }
+
     render() {
-        if (!this.valid()){
+        if (!this.state.validAccess){
             return (
                 <Redirect to="/" />
             );
         }
 
-        return (
-            <div className="container" style={styles.container}>
-                <h1 style={{marginBottom: '0px'}}>Hello, labyrinth ({this.props.userId})!!</h1>
-                <p style={styles.logout} onClick={this.logout}>Log out</p>
-                <Link to={recentPageLink(this.recentPage)}><h2 style={styles.text}>Go To Recent Page</h2></Link>
-                <h2 style={{marginTop: '50px', }}>Previous Page List</h2>
-                <div className="pageList" style={styles.pageList}>
-                    { prevPageList(this.recentPage) }
+        if (this.state.data != undefined) {
+            if (this.isStart(this.state.data.recentPage)){
+                return (
+                    <Redirect to="/story/1" />
+                );
+            }
+            return (
+                <div className="container" style={styles.container}>
+                    <h1 style={{marginBottom: '0px'}}>Hello, Class {this.state.data.classNum}!!</h1>
+                    <p style={styles.logout} onClick={this.logout}>Log out</p>
+                    <Link to={recentPageLink(this.state.data.recentPage)}><h2 style={styles.text}>Go To Recent Page</h2>
+                    </Link>
+                    <h2 style={{marginTop: '50px',}}>Previous Page List</h2>
+                    <div className="pageList" style={styles.pageList}>
+                        {prevPageList(this.state.data.recentPage)}
+                    </div>
                 </div>
-            </div>
-        );
+            );
+        }
+        else { return (<div></div>); }
     }
 }
 

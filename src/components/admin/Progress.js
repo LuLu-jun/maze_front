@@ -62,7 +62,6 @@ class Progress extends Component {
 
         for (var i=0; i<9; i++){
             const {begin, end} = progress[i];
-            console.log(begin, end);
             progressArray.push(<th>{ this.getTime (begin, end) }</th>);
         }
 
