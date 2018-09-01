@@ -173,17 +173,10 @@ const styles = {
     },
 };
 
-var mapStateToProps = (state) => {
-    return ({
-        id: state.login.id,
-        isAdmin: state.login.isAdmin,
-    });
-}
-
 var mapDispatchToProps = (dispatch) => {
     return ({
         logout: () => dispatch(logout()),
     });
-}
+};
 
-export default withCookies(connect(mapStateToProps, mapDispatchToProps)(Home));
+export default withCookies(connect(undefined, mapDispatchToProps)(Home));
