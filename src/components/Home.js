@@ -74,6 +74,10 @@ class Home extends Component {
         this.props.cookies.remove('id', {path: '/'});
         this.props.cookies.remove('pwd', {path: '/'});
         this.props.logout();
+        this.setState({
+            validAccess: false,
+            data: undefined,
+        });
     }
 
     getData(){

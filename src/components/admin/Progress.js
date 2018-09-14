@@ -8,6 +8,7 @@ import yellowCard from '../../yellowCard.png';
 import './Progress.css';
 
 var REAL_API_URL = '';
+var REAL_RESET_API_URL = '';
 
 class Progress extends Component {
     constructor(props) {
@@ -16,10 +17,12 @@ class Progress extends Component {
         const cookieId = this.props.cookies.get('id') || '';
         const cookiePwd = this.props.cookies.get('pwd') || '';
         REAL_API_URL = API_ADMIN_PROGRESS_URL + "/" + cookieId + "/" + cookiePwd;
+        REAL_RESET_API_URL = API_ADMIN_PROGRESS_URL + "/reset/" + cookieId + "/" + cookiePwd;
 
         var validAccess = true;
         if (cookieId == '' || cookiePwd == '') { validAccess = false; }
 
+        this.reset = this.reset.bind(this);
         this.getHeader = this.getHeader.bind(this);
         this.getTime = this.getTime.bind(this);
         this.getProgress = this.getProgress.bind(this);
@@ -33,6 +36,20 @@ class Progress extends Component {
         };
         if (validAccess)
             this.getTable();
+    }
+
+    reset(){
+        axios.get(REAL_RESET_API_URL)
+            .then( response => {
+                var data = response.data;
+                if (data.result == 0){
+                    alert(data.error);
+                }
+                else { alert('reset success!!'); }
+            })
+            .catch( response => {
+                alert(response);
+            });
     }
 
     getHeader(problemNum){
@@ -49,12 +66,20 @@ class Progress extends Component {
 
     getTime(begin, end){
         if (begin == -1){
-            return '00:00:00';
+            return '00:00';
         }
-        if (end == -1){
-            return '??:??:??';
+        else{
+            if (end == -1) { end = new Date().getTime(); }
+
+            var timeDiff = Math.ceil((end - begin)/1000);
+            var minutes = Math.floor((timeDiff % 3600) / 60);
+            var seconds = timeDiff % 60;
+
+            if (minutes < 10) { minutes = "0" + String(minutes); }
+            if (seconds < 10) { seconds = "0" + String(seconds); }
+
+            return String(minutes) + ":" + String(seconds);
         }
-        return end;
     }
 
     getProgress(progress){
@@ -89,6 +114,7 @@ class Progress extends Component {
     getRows(progressesData){
         var rows = [];
 
+        console.log(progressesData);
         for (var i=0; i<progressesData.length; i++){
             rows.push(this.getRow(progressesData[i]));
         }
@@ -121,9 +147,15 @@ class Progress extends Component {
                         table: table,
                     });
                 }
-            })
+            });
 
         return table;
+    }
+
+    componentDidMount() {
+        setInterval(function() {
+            window.location.reload();
+        }.bind(this), 1000)
     }
 
     render() {
@@ -135,6 +167,7 @@ class Progress extends Component {
 
         return (
             <div className="container" style={styles.container}>
+                <h1 onClick={this.reset} style={styles.resetButton}>Reset</h1>
                 <table>{this.state.table}</table>
             </div>
         );
@@ -145,8 +178,14 @@ const styles = {
     container: {
         width: '100%',
         display: 'flex',
+        flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
+    },
+    resetButton: {
+        color: 'white',
+        cursor: 'pointer',
+        textDecoration: 'underline',
     },
     cards: {
         display: 'flex',

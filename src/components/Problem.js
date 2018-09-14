@@ -1,44 +1,190 @@
 import React, {Component} from 'react';
+import axios from 'axios';
 import { Link, Redirect } from 'react-router-dom';
-import { connect } from 'react-redux';
+import { withCookies } from 'react-cookie';
 
-import image from '../image.png'
-import problemImage from '../problem.png'
+import { BASE_URL, API_PROBLEM_URL, API_NEXT_URL, API_TIME_URL } from "../URL";
 import okIcon from '../ok.png'
 import homeIcon from '../home.png'
-
 import './Group.css';
 
+var REAL_API_URL = '', REAL_NEXT_API_URL = '', REAL_HINT_API_URL;
 var answer='';
+const firstHintTime = 10, secondHintTime = 20;
 
 class Problem extends Component {
     constructor(props, match) {
         super(props);
 
-        this.state={
-            correct: false,
-        };
+        const cookieId = this.props.cookies.get('id') || '';
+        const cookiePwd = this.props.cookies.get('pwd') || '';
+        REAL_API_URL = API_PROBLEM_URL + "/" + cookieId + "/" + cookiePwd;
+        REAL_NEXT_API_URL = API_NEXT_URL + "/" + cookieId + "/" + cookiePwd;
+        REAL_HINT_API_URL = API_NEXT_URL + "/hint/" + cookieId + "/" + cookiePwd;
+
+        var validAccess = true;
+        if (cookieId == '' || cookiePwd == '') { validAccess = false; }
+
         this.problemNum = this.props.match.params.num;
-        this.valid = this.valid.bind(this);
+        this.getImage = this.getImage.bind(this);
+        this.compareAnswer = this.compareAnswer.bind(this);
         this.onKeyPress = this.onKeyPress.bind(this);
+        this.showHints = this.showHints.bind(this);
+        this.getHints = this.getHints.bind(this);
+        this.state={
+            validAccess: true,
+            correct: false,
+            image: <div></div>,
+            beginTime: undefined,
+            time: '',
+            hints: [null, null, null],
+        };
+        if (validAccess) {
+            this.getImage();
+            this.getHints();
+        }
     }
 
-    valid(){
-        const userId = this.props.userId;
-        const isAdmin = this.props.isAdmin;
-        return (userId!=undefined && isAdmin!=undefined && userId!=="" && !isAdmin);
+    componentDidMount() {
+        setInterval(function() {
+            axios.get(API_TIME_URL)
+                .then( response => {
+                    if (this.state.beginTime != undefined){
+                        var timeDiff = Math.ceil((response.data.time - this.state.beginTime)/1000);
+
+                        if (timeDiff >= firstHintTime && this.state.hints[0] == null ||
+                            timeDiff >= secondHintTime && this.state.hints[1] == null) {
+                            this.getHints();
+                        }
+
+                        if (timeDiff < 0){
+                            this.setState({ time : '' });
+                            return;
+                        }
+
+                        var minutes = Math.floor((timeDiff % 3600) / 60);
+                        var seconds = timeDiff % 60;
+
+                        if (minutes < 10) { minutes = "0" + String(minutes); }
+                        if (seconds < 10) { seconds = "0" + String(seconds); }
+
+                        this.setState({
+                            time: String(minutes) + ":" + String(seconds)
+                        });
+                    }
+                });
+        }.bind(this), 1000)
+    }
+
+    getImage(){
+        axios.get(REAL_API_URL + "/" + String(this.problemNum))
+            .then( response => {
+                var data = response.data;
+                if (data.result == 0){
+                    alert(data.error);
+                    this.setState({
+                        validAccess: false,
+                    });
+                }
+                else{
+                    var imageURL = BASE_URL + data.imageURL;
+                    this.setState({
+                        validAccess: true,
+                        image: <img className="content" src={imageURL} style={styles.content}/>,
+                        beginTime: data.begin
+                    });
+                }
+            })
+            .catch( response => {
+                alert(response);
+                this.setState({
+                    validAccess: false,
+                });
+            });
+    }
+
+    compareAnswer(){
+        axios.post(REAL_NEXT_API_URL, {
+            type: 'problem',
+            number: Number(this.problemNum),
+            answer: answer
+        })
+            .then( response => {
+                var data = response.data;
+                if (data.result == 0) {
+                    alert(data.error);
+                }
+                else if(data.result == 1){
+                    this.setState({
+                        correct: true
+                    });
+                }
+                else{
+                    alert('Hint arrived !!');
+                    var currentHint = this.state.hints;
+                    currentHint[2] = data.hint;
+                    this.setState({
+                        hints: currentHint
+                    });
+                }
+            })
+            .catch( response => {
+                alert(response);
+            });
+    }
+
+    getHints(){
+        axios.get(REAL_HINT_API_URL + "/" + this.problemNum)
+            .then( response => {
+                var data = response.data;
+                if (data.result == 0) {
+                    alert(data.error);
+                }
+                else{
+                    for (var i=0; i<3; i++){
+                        if (this.state.hints[i] != data.hints[i]){
+                            console.log(this.state.hints[i], data.hints[i]);
+                            alert('Hint arrived !!');
+                            break;
+                        }
+                    }
+                    this.setState({
+                        hints: data.hints
+                    });
+                }
+            })
+            .catch( response => {
+                alert(response);
+            });
+    }
+
+    showHints(hints){
+        var hintGroup = new Array();
+        for (var i=0; i<3; i++){
+            if (hints[i] != null){
+                hintGroup.push(
+                    <p style={styles.hint}>
+                        { hints[i] }
+                    </p>
+                );
+            }
+        }
+
+        return (
+            <div className="hintGroup" style={styles.hintGroup}>
+                {hintGroup}
+            </div>
+        );
     }
 
     onKeyPress(event){
         if (event.key === 'Enter'){
-            this.setState({
-                correct: true,
-            });
+            this.compareAnswer();
         }
     }
 
     render() {
-        if (!this.valid()){
+        if (!this.state.validAccess){
             return (
                 <Redirect to='/' />
             );
@@ -57,22 +203,18 @@ class Problem extends Component {
                         </Link>
                     </div></span>
                     <span><div className="center">
-                        <h2 className="time" style={styles.time}>11:11</h2>
+                        <h2 className="time" style={styles.time}>{this.state.time}</h2>
                     </div></span>
                     <span><div className="right">
                         <div className="answerBox" style={styles.answerBox}>
                             <input type="text" style={styles.answerInput} onKeyPress={this.onKeyPress}
                                    onChange={(event) => {answer= event.target.value}} />
-                            <img className="okButton" src={okIcon} style={styles.answerButton}/>
+                            <img className="okButton" src={okIcon} onClick={this.compareAnswer} style={styles.answerButton}/>
                         </div>
                     </div></span>
                 </div>
-                <img className="content" src={problemImage} style={styles.content}/>
-                <div className="hintGroup" style={styles.hintGroup}>
-                    <p style={styles.hint}>힌트1</p>
-                    <p style={styles.hint}>힌트2sdfasdfdasffadsasdfzcxcx</p>
-                    <p style={styles.hint}>힌트3wewwerweerw</p>
-                </div>
+                { this.state.image }
+                { this.showHints(this.state.hints) }
             </div>
         );
     }
@@ -138,11 +280,4 @@ const styles = {
     },
 };
 
-var mapStateToProps = (state) => {
-    return ({
-        userId: state.login.userId,
-        isAdmin: state.login.isAdmin,
-    });
-}
-
-export default connect(mapStateToProps)(Problem);
+export default withCookies(Problem);

@@ -36,7 +36,7 @@ class Member extends Component {
         this.state={
             validAccess: validAccess,
             table: '',
-        }
+        };
         if (validAccess)
             this.getTable();
     }
@@ -106,7 +106,7 @@ class Member extends Component {
         var result = [];
 
         for (var i=0; i<hintCodes.length;i ++){
-            result.push(<p style={{margin: '0'}}>{hintCodes[i]}</p>);
+            result.push(<p style={{margin: '0'}}>{hintCodes[i].code}</p>);
         }
         return (<div style={{display: 'flex', flexDirection: 'column'}}>{result}</div>);
     }
