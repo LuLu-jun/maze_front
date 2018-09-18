@@ -11,6 +11,7 @@ import AdminProgress from './components/admin/Progress';
 import AdminMember from './components/admin/Member';
 import AdminStory from './components/admin/Story';
 import AdminProblem from './components/admin/Problem';
+import AdminBranch from './components/admin/Branch';
 
 import './App.css';
 
@@ -29,6 +30,7 @@ class App extends Component {
               <Route path="/admin/member" component={AdminMember} />
               <Route path="/admin/problem" component={AdminProblem} />
               <Route path="/admin/story" component={AdminStory} />
+              <Route path="/admin/branch" component={AdminBranch} />
           </Switch>
       </div>
     );
