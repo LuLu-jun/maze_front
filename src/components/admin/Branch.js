@@ -67,7 +67,6 @@ class Branch extends Component {
         const array = fileURL.split("/");
         const fileName = array[array.length - 1];
 
-        console.log(REAL_API_URL + "/" +fileName);
         axios.delete(REAL_API_URL + "/" + fileName)
             .then( response => {
                 var data = response.data;
@@ -100,7 +99,6 @@ class Branch extends Component {
     }
 
     getRow(branchData){
-        console.log(branchData);
         const { beforeStory, yesStory, noStory, fileURL } = branchData;
 
         return (<tr>

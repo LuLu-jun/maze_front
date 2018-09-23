@@ -25,7 +25,7 @@ class Progress extends Component {
         this.reset = this.reset.bind(this);
         this.getHeader = this.getHeader.bind(this);
         this.getTime = this.getTime.bind(this);
-        this.getProgress = this.getProgress.bind(this);
+        this.getProblemProgress = this.getProblemProgress.bind(this);
         this.getYellowCard = this.getYellowCard.bind(this);
         this.getRow = this.getRow.bind(this);
         this.getRows = this.getRows.bind(this);
@@ -82,15 +82,15 @@ class Progress extends Component {
         }
     }
 
-    getProgress(progress){
-        var progressArray = [];
+    getProblemProgress(problemProgress){
+        var problemProgressArray = [];
 
         for (var i=0; i<9; i++){
-            const {begin, end} = progress[i];
-            progressArray.push(<th>{ this.getTime (begin, end) }</th>);
+            const {begin, end} = problemProgress[i];
+            problemProgressArray.push(<th>{ this.getTime (begin, end) }</th>);
         }
 
-        return progressArray;
+        return problemProgressArray;
     }
 
     getYellowCard(num){
@@ -102,11 +102,11 @@ class Progress extends Component {
     }
 
     getRow(progressData){
-        const { classNum, progress, warningNum } = progressData;
+        const { classNum, problems, warningNum } = progressData;
 
         return (<tr>
             <th>{ classNum }</th>
-            { this.getProgress(progress) }
+            { this.getProblemProgress(problems) }
             <th>{ this.getYellowCard(warningNum) }</th>
         </tr>);
     }
@@ -114,7 +114,6 @@ class Progress extends Component {
     getRows(progressesData){
         var rows = [];
 
-        console.log(progressesData);
         for (var i=0; i<progressesData.length; i++){
             rows.push(this.getRow(progressesData[i]));
         }

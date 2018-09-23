@@ -15,36 +15,40 @@ function recentPageLink(recentPage){
     return String(type) + "/" + String(number);
 }
 
-function prevPageList(recentPage) {
-    const { type, number } = recentPage;
+function prevPageList(stories, problems, branches) {
     var array = [];
 
-    for (var i = 1; i < number; i++){
+    var prevStories = new Array();
+    for (var i=0; i<stories.length; i++){
+        if (stories[i] == -1) { break; }
         array.push(
             <div style={styles.box}>
-                <Link to={"/story/" + String(i)}>
-                    <h2 style={styles.text}>Story {i}</h2>
-                </Link>
-            </div>
-        );
-        array.push(
-            <div style={styles.box}>
-                <Link to={"/problem/" + String(i)}>
-                    <h2 style={styles.text}>Problem {i}</h2>
+                <Link to={"/story/" + String(i + 1)}>
+                    <h2 style={styles.text}>Story {i + 1}</h2>
                 </Link>
             </div>
         );
     }
-    if (String(type) === "problem"){
+    for (var i=0; i<problems.length; i++){
+        if (problems[i].begin == -1) { break; }
         array.push(
-            <div style={styles.lastBox}>
-                <Link to={"/story/" + String(number)}>
-                    <h2 style={styles.text}>Story {number}</h2>
+            <div style={styles.box}>
+                <Link to={"/problem/" + String(i + 1)}>
+                    <h2 style={styles.text}>Problem {i + 1}</h2>
                 </Link>
             </div>
         );
     }
-
+    for (var i=0; i<branches.length; i++){
+        if (branches[i].storyNumber == -1) { break; }
+        array.push(
+            <div style={styles.box}>
+                <Link to={"/branch/" + String(i + 1)}>
+                    <h2 style={styles.text}>Branch {i + 1}</h2>
+                </Link>
+            </div>
+        );
+    }
     return array;
 }
 
@@ -97,6 +101,9 @@ class Home extends Component {
                         data: {
                             classNum: progress.classNum,
                             recentPage: progress.recentPage,
+                            stories: progress.stories,
+                            problems: progress.problems,
+                            branches: progress.branches,
                         }
                     });
                 }
@@ -137,7 +144,7 @@ class Home extends Component {
                     </Link>
                     <h2 style={{marginTop: '50px',}}>Previous Page List</h2>
                     <div className="pageList" style={styles.pageList}>
-                        {prevPageList(this.state.data.recentPage)}
+                        {prevPageList(this.state.data.stories, this.state.data.problems, this.state.data.branches)}
                     </div>
                 </div>
             );

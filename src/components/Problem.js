@@ -1,15 +1,15 @@
 import React, {Component} from 'react';
 import axios from 'axios';
-import { Link, Redirect } from 'react-router-dom';
-import { withCookies } from 'react-cookie';
+import {Link, Redirect} from 'react-router-dom';
+import {withCookies} from 'react-cookie';
 
-import { BASE_URL, API_PROBLEM_URL, API_NEXT_URL, API_TIME_URL } from "../URL";
+import {BASE_URL, API_PROBLEM_URL, API_NEXT_URL, API_TIME_URL} from "../URL";
 import okIcon from '../ok.png'
 import homeIcon from '../home.png'
 import './Group.css';
 
 var REAL_API_URL = '', REAL_NEXT_API_URL = '', REAL_HINT_API_URL;
-var answer='';
+var answer = '';
 const firstHintTime = 10, secondHintTime = 20;
 
 class Problem extends Component {
@@ -23,7 +23,9 @@ class Problem extends Component {
         REAL_HINT_API_URL = API_NEXT_URL + "/hint/" + cookieId + "/" + cookiePwd;
 
         var validAccess = true;
-        if (cookieId == '' || cookiePwd == '') { validAccess = false; }
+        if (cookieId == '' || cookiePwd == '') {
+            validAccess = false;
+        }
 
         this.problemNum = this.props.match.params.num;
         this.getImage = this.getImage.bind(this);
@@ -31,11 +33,13 @@ class Problem extends Component {
         this.onKeyPress = this.onKeyPress.bind(this);
         this.showHints = this.showHints.bind(this);
         this.getHints = this.getHints.bind(this);
-        this.state={
+        this.timeRefresh = undefined;
+        this.state = {
             validAccess: true,
-            correct: false,
+            nextPage: undefined,
             image: <div></div>,
             beginTime: undefined,
+            endTime: undefined,
             time: '',
             hints: [null, null, null],
         };
@@ -46,56 +50,67 @@ class Problem extends Component {
     }
 
     componentDidMount() {
-        setInterval(function() {
+        this.timeRefresh = setInterval(function () {
             axios.get(API_TIME_URL)
-                .then( response => {
-                    if (this.state.beginTime != undefined){
-                        var timeDiff = Math.ceil((response.data.time - this.state.beginTime)/1000);
+                .then(response => {
+                    if (this.state.beginTime != undefined) {
+                        if (this.state.endTime != undefined) {
+                            var timeDiff = Math.ceil((this.state.endTime - this.state.beginTime) / 1000);
+                            clearInterval(this.timeRefresh);
+                        }
+                        else {
+                            var timeDiff = Math.ceil((response.data.time - this.state.beginTime) / 1000);
 
-                        if (timeDiff >= firstHintTime && this.state.hints[0] == null ||
-                            timeDiff >= secondHintTime && this.state.hints[1] == null) {
-                            this.getHints();
+                            if (timeDiff >= firstHintTime && this.state.hints[0] == null ||
+                                timeDiff >= secondHintTime && this.state.hints[1] == null) {
+                                this.getHints();
+                            }
                         }
 
-                        if (timeDiff < 0){
-                            this.setState({ time : '' });
+                        if (timeDiff < 0) {
+                            this.setState({time: ''});
                             return;
                         }
 
                         var minutes = Math.floor((timeDiff % 3600) / 60);
                         var seconds = timeDiff % 60;
 
-                        if (minutes < 10) { minutes = "0" + String(minutes); }
-                        if (seconds < 10) { seconds = "0" + String(seconds); }
+                        if (minutes < 10) {
+                            minutes = "0" + String(minutes);
+                        }
+                        if (seconds < 10) {
+                            seconds = "0" + String(seconds);
+                        }
 
                         this.setState({
                             time: String(minutes) + ":" + String(seconds)
                         });
                     }
                 });
-        }.bind(this), 1000)
+        }.bind(this), 1000);
     }
 
-    getImage(){
+    getImage() {
         axios.get(REAL_API_URL + "/" + String(this.problemNum))
-            .then( response => {
+            .then(response => {
                 var data = response.data;
-                if (data.result == 0){
+                if (data.result == 0) {
                     alert(data.error);
                     this.setState({
                         validAccess: false,
                     });
                 }
-                else{
+                else {
                     var imageURL = BASE_URL + data.imageURL;
                     this.setState({
                         validAccess: true,
                         image: <img className="content" src={imageURL} style={styles.content}/>,
-                        beginTime: data.begin
+                        beginTime: data.begin,
+                        endTime: data.end,
                     });
                 }
             })
-            .catch( response => {
+            .catch(response => {
                 alert(response);
                 this.setState({
                     validAccess: false,
@@ -103,23 +118,24 @@ class Problem extends Component {
             });
     }
 
-    compareAnswer(){
+    compareAnswer() {
         axios.post(REAL_NEXT_API_URL, {
             type: 'problem',
             number: Number(this.problemNum),
             answer: answer
         })
-            .then( response => {
+            .then(response => {
                 var data = response.data;
                 if (data.result == 0) {
                     alert(data.error);
                 }
-                else if(data.result == 1){
+                else if (data.result == 1) {
+                    clearInterval(this.timeRefresh);
                     this.setState({
-                        correct: true
+                        nextPage: data.nextPage
                     });
                 }
-                else{
+                else {
                     alert('Hint arrived !!');
                     var currentHint = this.state.hints;
                     currentHint[2] = data.hint;
@@ -128,22 +144,21 @@ class Problem extends Component {
                     });
                 }
             })
-            .catch( response => {
+            .catch(response => {
                 alert(response);
             });
     }
 
-    getHints(){
+    getHints() {
         axios.get(REAL_HINT_API_URL + "/" + this.problemNum)
-            .then( response => {
+            .then(response => {
                 var data = response.data;
                 if (data.result == 0) {
                     alert(data.error);
                 }
-                else{
-                    for (var i=0; i<3; i++){
-                        if (this.state.hints[i] != data.hints[i]){
-                            console.log(this.state.hints[i], data.hints[i]);
+                else {
+                    for (var i = 0; i < 3; i++) {
+                        if (this.state.hints[i] != data.hints[i]) {
                             alert('Hint arrived !!');
                             break;
                         }
@@ -153,18 +168,18 @@ class Problem extends Component {
                     });
                 }
             })
-            .catch( response => {
+            .catch(response => {
                 alert(response);
             });
     }
 
-    showHints(hints){
+    showHints(hints) {
         var hintGroup = new Array();
-        for (var i=0; i<3; i++){
-            if (hints[i] != null){
+        for (var i = 0; i < 3; i++) {
+            if (hints[i] != null) {
                 hintGroup.push(
                     <p style={styles.hint}>
-                        { hints[i] }
+                        {hints[i]}
                     </p>
                 );
             }
@@ -177,21 +192,24 @@ class Problem extends Component {
         );
     }
 
-    onKeyPress(event){
-        if (event.key === 'Enter'){
+    onKeyPress(event) {
+        if (event.key === 'Enter') {
             this.compareAnswer();
         }
     }
 
     render() {
-        if (!this.state.validAccess){
+        if (!this.state.validAccess) {
             return (
-                <Redirect to='/' />
+                <Redirect to='/'/>
             );
         }
-        if (this.state.correct){
+        if (this.state.nextPage != undefined) {
+            const type = this.state.nextPage.type;
+            const number = this.state.nextPage.number;
+            const nextPage = '/' + type + '/' + String(number);
             return (
-                <Redirect to={'/story/' + String(parseInt(this.problemNum) + 1)}/>
+                <Redirect to={nextPage}/>
             );
         }
         return (
@@ -208,13 +226,16 @@ class Problem extends Component {
                     <span><div className="right">
                         <div className="answerBox" style={styles.answerBox}>
                             <input type="text" style={styles.answerInput} onKeyPress={this.onKeyPress}
-                                   onChange={(event) => {answer= event.target.value}} />
-                            <img className="okButton" src={okIcon} onClick={this.compareAnswer} style={styles.answerButton}/>
+                                   onChange={(event) => {
+                                       answer = event.target.value
+                                   }}/>
+                            <img className="okButton" src={okIcon} onClick={this.compareAnswer}
+                                 style={styles.answerButton}/>
                         </div>
                     </div></span>
                 </div>
-                { this.state.image }
-                { this.showHints(this.state.hints) }
+                {this.state.image}
+                {this.showHints(this.state.hints)}
             </div>
         );
     }

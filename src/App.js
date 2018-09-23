@@ -6,6 +6,7 @@ import Login from './components/Login';
 import Home from './components/Home';
 import Story from './components/Story';
 import Problem from './components/Problem';
+import Branch from './components/Branch';
 import AdminHome from './components/admin/Home';
 import AdminProgress from './components/admin/Progress';
 import AdminMember from './components/admin/Member';
@@ -25,6 +26,7 @@ class App extends Component {
               <Route path="/home" component={Home} />
               <Route path="/problem/:num" component={Problem} />
               <Route path="/story/:num" component={Story} />
+              <Route path="/branch/:num" component={Branch} />
               <Route path="/admin/home" component={AdminHome} />
               <Route path="/admin/progress" component={AdminProgress} />
               <Route path="/admin/member" component={AdminMember} />

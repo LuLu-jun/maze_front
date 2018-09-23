@@ -9,6 +9,7 @@ import './Story.css';
 var classTypes = new Array("전기", "후기");
 var inputNum = '';
 var inputClassType = classTypes[0];
+var inputStoryType = 1;
 var inputFile = undefined;
 var REAL_API_URL = '';
 
@@ -43,6 +44,7 @@ class Story extends Component {
         var formData = new FormData();
         formData.append('num', inputNum);
         formData.append('classType', inputClassType);
+        formData.append('storyType', inputStoryType);
         formData.append('file', inputFile);
 
         axios.post(REAL_API_URL, formData)
@@ -63,7 +65,6 @@ class Story extends Component {
         const array = fileURL.split("/");
         const fileName = array[array.length - 1];
 
-        console.log(REAL_API_URL + "/" +fileName);
         axios.delete(REAL_API_URL + "/" + fileName)
             .then( response => {
                 var data = response.data;
@@ -87,6 +88,7 @@ class Story extends Component {
         var header = [];
 
         header.push(<th>Num</th>);
+        header.push(<th>Type</th>);
         header.push(<th>Show</th>);
         header.push(<th>Delete</th>);
 
@@ -94,10 +96,11 @@ class Story extends Component {
     }
 
     getRow(storyData){
-        const { num, fileURL } = storyData;
+        const { num, storyType, fileURL } = storyData;
 
         return (<tr>
             <th>{ num }</th>
+            <th>{ storyType }</th>
             <th style={styles.showButton}>
                 <a href={ BASE_URL + fileURL } style={{textDecoration: 'none', color: 'white', width: '100%', height: '100%'}}>
                     Show
@@ -197,6 +200,12 @@ class Story extends Component {
                     <select defaultValue={inputClassType} onChange={(event) => {inputClassType = event.target.value}}>
                         <option value={classTypes[0]}>전기</option>
                         <option value={classTypes[1]}>후기</option>
+                    </select>
+                    <select defaultValue={inputStoryType} onChange={(event) => {inputStoryType = event.target.value}}>
+                        <option value={1}>1</option>
+                        <option value={2}>2</option>
+                        <option value={3}>3</option>
+                        <option value={4}>4</option>
                     </select>
                     <input type="file" accept=".png" style={styles.fileInput}
                            onChange={(event) => {inputFile = event.target.files[0]}}/>
