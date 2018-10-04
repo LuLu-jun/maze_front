@@ -12,10 +12,11 @@ var REAL_API_URL = '';
 
 function recentPageLink(recentPage){
     const { type, number } = recentPage;
-    return String(type) + "/" + String(number);
+    if (type != "ending") { return String(type) + "/" + String(number); }
+    else { return String(type); }
 }
 
-function prevPageList(stories, problems, branches) {
+function prevPageList(stories, problems, branches, recentPage) {
     var array = [];
 
     var prevStories = new Array();
@@ -45,6 +46,15 @@ function prevPageList(stories, problems, branches) {
             <div style={styles.box}>
                 <Link to={"/branch/" + String(i + 1)}>
                     <h2 style={styles.text}>Branch {i + 1}</h2>
+                </Link>
+            </div>
+        );
+    }
+    if (recentPage.type == "ending"){
+        array.push(
+            <div style={styles.box}>
+                <Link to={"/ending"}>
+                    <h2 style={styles.text}>Ending</h2>
                 </Link>
             </div>
         );
@@ -144,7 +154,7 @@ class Home extends Component {
                     </Link>
                     <h2 style={{marginTop: '50px',}}>Previous Page List</h2>
                     <div className="pageList" style={styles.pageList}>
-                        {prevPageList(this.state.data.stories, this.state.data.problems, this.state.data.branches)}
+                        {prevPageList(this.state.data.stories, this.state.data.problems, this.state.data.branches, this.state.data.recentPage)}
                     </div>
                 </div>
             );

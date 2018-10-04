@@ -8,7 +8,7 @@ import okIcon from '../ok.png'
 import homeIcon from '../home.png'
 import './Group.css';
 
-var REAL_API_URL = '', REAL_NEXT_API_URL = '', REAL_HINT_API_URL;
+var REAL_API_URL = '', REAL_NEXT_API_URL = '', REAL_HINT_API_URL = '';
 var answer = '';
 const firstHintTime = 10, secondHintTime = 20;
 
@@ -34,8 +34,9 @@ class Problem extends Component {
         this.showHints = this.showHints.bind(this);
         this.getHints = this.getHints.bind(this);
         this.timeRefresh = undefined;
+        this.pathName = window.location.pathname;
         this.state = {
-            validAccess: true,
+            validAccess: validAccess,
             nextPage: undefined,
             image: <div></div>,
             beginTime: undefined,
@@ -53,6 +54,7 @@ class Problem extends Component {
         this.timeRefresh = setInterval(function () {
             axios.get(API_TIME_URL)
                 .then(response => {
+                    if (this.pathName != window.location.pathname) { clearInterval(this.timeRefresh); }
                     if (this.state.beginTime != undefined) {
                         if (this.state.endTime != undefined) {
                             var timeDiff = Math.ceil((this.state.endTime - this.state.beginTime) / 1000);
@@ -208,6 +210,9 @@ class Problem extends Component {
             const type = this.state.nextPage.type;
             const number = this.state.nextPage.number;
             const nextPage = '/' + type + '/' + String(number);
+
+            if (type == "problem") { window.location.reload(); }
+
             return (
                 <Redirect to={nextPage}/>
             );
@@ -216,7 +221,7 @@ class Problem extends Component {
             <div className="container" style={styles.container}>
                 <div className="group">
                     <span><div className="left">
-                        <Link to="/" style={{width: '0',}}>
+                        <Link to="/" onClick={()=>{ clearInterval(this.timeRefresh); }} style={{width: '0',}}>
                             <img className="mainIcon" src={homeIcon} style={styles.mainIcon}/>
                         </Link>
                     </div></span>

@@ -26,7 +26,7 @@ class Story extends Component {
         this.moveNext = this.moveNext.bind(this);
         this.state = {
             validAccess: validAccess,
-            clickNext: false,
+            nextPage: undefined,
             image: <div></div>,
         };
         if (validAccess)
@@ -71,7 +71,7 @@ class Story extends Component {
                 }
                 else{
                     this.setState({
-                        clickNext: true
+                        nextPage: data.nextPage
                     });
                 }
             })
@@ -86,9 +86,15 @@ class Story extends Component {
                 <Redirect to='/' />
             );
         }
-        if (this.state.clickNext){
+        if (this.state.nextPage != undefined){
+            const type = this.state.nextPage.type;
+            const number = this.state.nextPage.number;
+
+            var nextPage = '/' + type;
+            if (number != undefined) { nextPage = nextPage + '/' + String(number); }
+
             return (
-                <Redirect to={'/problem/' + String(this.storyNum)} />
+                <Redirect to={nextPage}/>
             );
         }
         return (

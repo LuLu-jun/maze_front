@@ -7,10 +7,12 @@ const API_ADMIN_PROBLEM_URL = API_ADMIN_BASE_URL + "/problem";
 const API_ADMIN_STORY_URL = API_ADMIN_BASE_URL + "/story";
 const API_ADMIN_PROGRESS_URL = API_ADMIN_BASE_URL + "/progress";
 const API_ADMIN_BRANCH_URL = API_ADMIN_BASE_URL + "/branch";
+const API_ADMIN_ENDING_URL = API_ADMIN_BASE_URL + "/ending";
 const API_HOME_URL = API_BASE_URL + "/home";
 const API_STORY_URL = API_BASE_URL + "/story";
 const API_PROBLEM_URL = API_BASE_URL + "/problem";
 const API_BRANCH_URL = API_BASE_URL + "/branch";
+const API_ENDING_URL = API_BASE_URL + "/ending";
 const API_NEXT_URL = API_BASE_URL + "/next";
 const API_TIME_URL = API_BASE_URL + "/time";
 
@@ -22,10 +24,12 @@ export {
     API_ADMIN_STORY_URL,
     API_ADMIN_PROGRESS_URL,
     API_ADMIN_BRANCH_URL,
+    API_ADMIN_ENDING_URL,
     API_HOME_URL,
     API_STORY_URL,
     API_PROBLEM_URL,
     API_BRANCH_URL,
+    API_ENDING_URL,
     API_NEXT_URL,
     API_TIME_URL,
 }

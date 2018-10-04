@@ -52,6 +52,9 @@ class Home extends Component {
                         <Link to="/admin/branch" style={{textDecoration: 'none',}}>
                             <h1 style={styles.button}>Branches</h1>
                         </Link>
+                        <Link to="/admin/ending" style={{textDecoration: 'none',}}>
+                            <h1 style={styles.button}>Endings</h1>
+                        </Link>
                     </div>
                 </div>
             </div>
