@@ -10,6 +10,8 @@ import App from './App';
 import Reducer from './redux/reducers';
 import './index.css';
 
+//ftp test -lulu
+
 const store = createStore(Reducer);
 
 ReactDOM.render(

@@ -1,4 +1,4 @@
-const BASE_URL = "http://localhost:19191";
+const BASE_URL = "http://ssal.sparcs.org:32828";
 const API_BASE_URL = BASE_URL + "/api";
 const API_LOGIN_URL = API_BASE_URL + "/login";
 const API_ADMIN_BASE_URL = API_BASE_URL + "/admin";

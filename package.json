@@ -24,12 +24,11 @@
   "devDependencies": {},
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jaejun1/maze_front.git"
+    "url": "git+https://github.com/sni-J/maze_front.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/jaejun1/maze_front/issues"
-  },
-  "homepage": "https://github.com/jaejun1/maze_front#readme"
+    "url": "https://github.com/sni-J/maze_front/issues"
+  }
 }

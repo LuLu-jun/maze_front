@@ -6,8 +6,8 @@ import { withCookies } from 'react-cookie';
 import { BASE_URL, API_ADMIN_PROBLEM_URL } from "../../URL";
 import './Problem.css';
 
-var classTypes = new Array("전기", "후기");
-var problemTypes = new Array("가", "나");
+var classTypes = new Array('전기');//new Array("전기", "후기"); 2019: 전기 only
+var problemTypes = new Array("A", "B", "C");
 var inputNum = '';
 var inputClassType = classTypes[0];
 var inputProblemType = problemTypes[0];
@@ -160,9 +160,10 @@ class Problem extends Component {
     getTableTitle(classType, problemType){
         return (
             <h2 style={styles.tableTitle}>
-                {classTypes[classType] + " (" + problemTypes[problemType] + ")"}
+                {/*classTypes[classType] +*/ "Type (" + problemTypes[problemType] + ")"}
             </h2>
         );
+        // 2019: 전기 only; classType 출력 제외
     }
 
     getTables(){
@@ -234,15 +235,16 @@ class Problem extends Component {
                         <div style={styles.inputLine}>
                             <input type="text" placeholder="번호" style={{width: '50px', textAlign: 'center',}}
                                    onChange={(event) => {inputNum = event.target.value}}/>
-                            <select defaultValue={inputClassType} onChange={(event) => {inputClassType = event.target.value}}>
+                            {/*<select defaultValue={inputClassType} onChange={(event) => {inputClassType = event.target.value}}>
                                 <option value={classTypes[0]}>전기</option>
                                 <option value={classTypes[1]}>후기</option>
-                            </select>
+                            </select>*/}
                             <select defaultValue={inputProblemType} onChange={(event) => {inputProblemType = event.target.value}}>
-                                <option value={problemTypes[0]}>가</option>
-                                <option value={problemTypes[1]}>나</option>
+                                <option value={problemTypes[0]}>A</option>
+                                <option value={problemTypes[1]}>B</option>
+                                <option value={problemTypes[2]}>C</option>
                             </select>
-                            <input type="file" accept=".png" style={styles.fileInput}
+                            <input type="file" accept=".png, .gif" style={styles.fileInput}
                                    onChange={(event) => {inputFile = event.target.files[0]}}/>
                             <input type="text" placeholder="정답" style={{textAlign: 'center',}}
                                    onChange={(event) => {inputAnswer = event.target.value}}/>

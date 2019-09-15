@@ -6,7 +6,7 @@ import { withCookies } from 'react-cookie';
 import { BASE_URL, API_ADMIN_ENDING_URL } from "../../URL";
 import './Story.css';
 
-var classTypes = new Array("전기", "후기");
+var classTypes = new Array('전기');//new Array("전기", "후기"); 2019: 전기 only
 var inputClassType = classTypes[0];
 var inputFile = undefined;
 var REAL_API_URL = '';
@@ -81,7 +81,7 @@ class Ending extends Component {
     getHeader(){
         var header = [];
 
-        header.push(<th>Class Type</th>);
+        //header.push(<th>Class Type</th>);
         header.push(<th>Show</th>);
         header.push(<th>Delete</th>);
 
@@ -92,7 +92,7 @@ class Ending extends Component {
         const { classType, fileURL } = endingData;
 
         return (<tr>
-            <th>{ classType }</th>
+            {/*<th>{ classType }</th>*/}
             <th style={styles.showButton}>
                 <a href={ BASE_URL + fileURL } style={{textDecoration: 'none', color: 'white', width: '100%', height: '100%'}}>
                     Show
@@ -156,11 +156,11 @@ class Ending extends Component {
         return (
             <div className="container" style={styles.container}>
                 <div className="box" style={styles.box}>
-                    <select defaultValue={inputClassType} onChange={(event) => {inputClassType = event.target.value}}>
+                    {/*<select defaultValue={inputClassType} onChange={(event) => {inputClassType = event.target.value}}>
                         <option value={classTypes[0]}>전기</option>
                         <option value={classTypes[1]}>후기</option>
-                    </select>
-                    <input type="file" accept=".png" style={styles.fileInput}
+                    </select>*/}
+                    <input type="file" accept=".png, .gif" style={styles.fileInput}
                            onChange={(event) => {inputFile = event.target.files[0]}}/>
                     <h3 onClick={this.addEnding} style={styles.button}>+ add</h3>
                 </div>
