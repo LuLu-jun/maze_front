@@ -100,7 +100,7 @@ class Story extends Component {
 
         return (<tr>
             <th>{ num }</th>
-            <th>{ storyType }</th>
+            {/*<th>{ storyType }</th>*/}
             <th style={styles.showButton}>
                 <a href={ BASE_URL + fileURL } style={{textDecoration: 'none', color: 'white', width: '100%', height: '100%'}}>
                     Show
@@ -201,14 +201,14 @@ class Story extends Component {
                     {/*<select defaultValue={inputClassType} onChange={(event) => {inputClassType = event.target.value}}>
                         <option value={classTypes[0]}>전기</option>
                         <option value={classTypes[1]}>후기</option>
-                    <select defaultValue={inputStoryType} onChange={(event) => {inputStoryType = event.target.value}}>
                     </select>*/}
+                    {/*<select defaultValue={inputStoryType} onChange={(event) => {inputStoryType = event.target.value}}>
                         <option value={1}>1</option>
                         <option value={2}>2</option>
                         <option value={3}>3</option>
                         <option value={4}>4</option>
-                    </select>
                     <input type="file" accept=".png" style={styles.fileInput}
+                    </select>*/}
                            onChange={(event) => {inputFile = event.target.files[0]}}/>
                     <h3 onClick={this.addStory} style={styles.button}>+ add</h3>
                 </div>
