@@ -8,6 +8,9 @@ import okIcon from '../ok.png'
 import homeIcon from '../home.png'
 import './Group.css';
 
+import warningImage from '../warning.png'
+import wrongImage from '../wrong.png'
+
 var REAL_API_URL = '', REAL_NEXT_API_URL = '', REAL_HINT_API_URL = '';
 var answer = '';
 const firstHintTime = 10, secondHintTime = 20;
@@ -43,6 +46,7 @@ class Problem extends Component {
             endTime: undefined,
             time: '',
             hints: [null, null, null],
+            answerState: ''
         };
         if (validAccess) {
             this.getImage();
@@ -129,7 +133,20 @@ class Problem extends Component {
             .then(response => {
                 var data = response.data;
                 if (data.result == 0) {
-                    alert(data.error);
+                  switch(data.error){
+                    case 'wrong answer':
+                      this.setState({answerState: 'wrong'})
+                      setTimeout(()=>{
+                        this.setState({answerState: ''})
+                      }, 1000);
+                      break;
+                    case 'WARNING !!':
+                      this.setState({answerState: 'warning'})
+                      setTimeout(()=>{
+                        this.setState({answerState: ''})
+                      }, 2000);
+                      break;
+                  }
                 }
                 else if (data.result == 1) {
                     clearInterval(this.timeRefresh);
@@ -239,7 +256,9 @@ class Problem extends Component {
                         </div>
                     </div></span>
                 </div>
-                {this.state.image}
+                {(this.state.answerState=='' && this.state.image)}
+                {(this.state.answerState=='wrong' && <img className="content" src={wrongImage} style={styles.content}/>)}
+                {(this.state.answerState=='warning' && <img className="content" src={warningImage} style={styles.content}/>)}
                 {this.showHints(this.state.hints)}
             </div>
         );
