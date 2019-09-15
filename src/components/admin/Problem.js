@@ -6,8 +6,8 @@ import { withCookies } from 'react-cookie';
 import { BASE_URL, API_ADMIN_PROBLEM_URL } from "../../URL";
 import './Problem.css';
 
-var problemTypes = new Array("가", "나");
 var classTypes = new Array('전기');//new Array("전기", "후기"); 2019: 전기 only
+var problemTypes = new Array("A", "B", "C");
 var inputNum = '';
 var inputClassType = classTypes[0];
 var inputProblemType = problemTypes[0];
@@ -240,8 +240,9 @@ class Problem extends Component {
                                 <option value={classTypes[1]}>후기</option>
                             </select>*/}
                             <select defaultValue={inputProblemType} onChange={(event) => {inputProblemType = event.target.value}}>
-                                <option value={problemTypes[0]}>가</option>
-                                <option value={problemTypes[1]}>나</option>
+                                <option value={problemTypes[0]}>A</option>
+                                <option value={problemTypes[1]}>B</option>
+                                <option value={problemTypes[2]}>C</option>
                             </select>
                             <input type="file" accept=".png" style={styles.fileInput}
                                    onChange={(event) => {inputFile = event.target.files[0]}}/>

@@ -11,7 +11,8 @@ var id='';
 var pwd='';
 var classTypes = new Array("전기", "후기");
 var classType = classTypes[0];
-var problemTypes='';
+var problemTypes = new Array("A", "B", "C");
+var problemType= problemTypes[0];
 var hintCodes = new Array("", "", "");
 var REAL_API_URL = '';
 
@@ -47,7 +48,7 @@ class Member extends Component {
             id: id,
             pwd: pwd,
             classType: classType,
-            problemType: problemTypes,
+            problemType: problemType,
             hintCodes: hintCodes,
         })
             .then( response => {
@@ -192,8 +193,11 @@ class Member extends Component {
                                 <option value={classTypes[0]}>전기</option>
                                 <option value={classTypes[1]}>후기</option>
                             </select>*/}
-                            <input type="text" style={styles.boxInputStyle} placeholder="problem types (가 or 나)"
-                                   onChange={(event) => {problemTypes = event.target.value}}/>
+                            <select defaultValue={problemType} onChange={(event) => {problemType = event.target.value}}>
+                                <option value={problemTypes[0]}>A</option>
+                                <option value={problemTypes[1]}>B</option>
+                                <option value={problemTypes[2]}>C</option>
+                            </select>
                         </div>
                         <div stlye={styles.inputLine}>
                             <input type="text" style={styles.boxInputStyle} placeholder="hint code 1"
