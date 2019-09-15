@@ -159,8 +159,8 @@ class Ending extends Component {
                     {/*<select defaultValue={inputClassType} onChange={(event) => {inputClassType = event.target.value}}>
                         <option value={classTypes[0]}>전기</option>
                         <option value={classTypes[1]}>후기</option>
-                    <input type="file" accept=".png" style={styles.fileInput}
                     </select>*/}
+                    <input type="file" accept=".png, .gif" style={styles.fileInput}
                            onChange={(event) => {inputFile = event.target.files[0]}}/>
                     <h3 onClick={this.addEnding} style={styles.button}>+ add</h3>
                 </div>
