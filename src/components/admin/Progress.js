@@ -153,7 +153,7 @@ class Progress extends Component {
 
     componentDidMount() {
         setInterval(function() {
-            window.location.reload();
+          this.getTable();
         }.bind(this), 1000)
     }
 
