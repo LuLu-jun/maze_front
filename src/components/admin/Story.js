@@ -6,7 +6,7 @@ import { withCookies } from 'react-cookie';
 import { BASE_URL, API_ADMIN_STORY_URL } from "../../URL";
 import './Story.css';
 
-var classTypes = new Array("전기", "후기");
+var classTypes = new Array('전기');//new Array("전기", "후기"); 2019: 전기 only
 var inputNum = '';
 var inputClassType = classTypes[0];
 var inputStoryType = 1;
@@ -88,7 +88,7 @@ class Story extends Component {
         var header = [];
 
         header.push(<th>Num</th>);
-        header.push(<th>Type</th>);
+        // header.push(<th>Type</th>);
         header.push(<th>Show</th>);
         header.push(<th>Delete</th>);
 
@@ -165,10 +165,11 @@ class Story extends Component {
 
                         tables.push(
                             <div style={styles.table}>
-                                { this.getTableTitle(classType) }
+                                {/* this.getTableTitle(classType) */}
                                 <div>{ this.getTable(storiesData.slice(begin, end)) }</div>
                             </div>
                         );
+                        // 2019: 전기 only; title 필요 없으므로 삭제
                     }
 
                     this.setState({
@@ -197,11 +198,11 @@ class Story extends Component {
                 <div className="box" style={styles.box}>
                     <input type="text" placeholder="번호" style={{width: '50px', textAlign: 'center',}}
                            onChange={(event) => {inputNum = event.target.value}}/>
-                    <select defaultValue={inputClassType} onChange={(event) => {inputClassType = event.target.value}}>
+                    {/*<select defaultValue={inputClassType} onChange={(event) => {inputClassType = event.target.value}}>
                         <option value={classTypes[0]}>전기</option>
                         <option value={classTypes[1]}>후기</option>
-                    </select>
                     <select defaultValue={inputStoryType} onChange={(event) => {inputStoryType = event.target.value}}>
+                    </select>*/}
                         <option value={1}>1</option>
                         <option value={2}>2</option>
                         <option value={3}>3</option>
