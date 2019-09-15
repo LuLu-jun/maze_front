@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Link, Redirect } from 'react-router-dom';
 import { withCookies } from 'react-cookie';
 
-import { BASE_URL, API_STORY_URL, API_NEXT_URL } from "../URL";
+import { BASE_URL, API_STORY_URL, API_NEXT_URL,API_TIME_URL } from "../URL";
 import homeIcon from '../home.png'
 import './Group.css';
 
@@ -24,10 +24,16 @@ class Story extends Component {
         this.storyNum = this.props.match.params.num;
         this.getImage = this.getImage.bind(this);
         this.moveNext = this.moveNext.bind(this);
+        this.timeRefresh = undefined;
+        this.pathName = window.location.pathname;
         this.state = {
             validAccess: validAccess,
             nextPage: undefined,
             image: <div></div>,
+            okayToPass: false,
+            beginTime: undefined,
+            endTime: undefined,
+            time: ''
         };
         if (validAccess)
             this.getImage();
@@ -47,7 +53,9 @@ class Story extends Component {
                     var imageURL = BASE_URL + data.imageURL;
                     this.setState({
                         validAccess: true,
-                        image: <img className="content" src={imageURL} style={styles.content}/>
+                        image: <img className="content" src={imageURL} style={styles.content}/>,
+                        beginTime: data.begin,
+                        endTime: data.end,
                     });
                 }
             })
@@ -80,6 +88,45 @@ class Story extends Component {
             });
     }
 
+    componentDidMount() {
+        this.timeRefresh = setInterval(function () {
+            axios.get(API_TIME_URL)
+                .then(response => {
+                    if (this.pathName != window.location.pathname) { clearInterval(this.timeRefresh);}
+                    if (this.state.beginTime != undefined) {
+                        if (this.state.endTime != undefined) {
+                            var timeDiff = 30;
+                            clearInterval(this.timeRefresh);
+                        }
+                        else {
+                            var timeDiff = Math.ceil((response.data.time - this.state.beginTime) / 1000);
+                        }
+
+                        timeDiff = 30 - timeDiff;
+
+                        if (timeDiff <= 0) {
+                            this.setState({time: '', okayToPass: true});
+                            return;
+                        }
+
+                        var minutes = Math.floor((timeDiff % 3600) / 60);
+                        var seconds = timeDiff % 60;
+
+                        if (minutes < 10) {
+                            minutes = "0" + String(minutes);
+                        }
+                        if (seconds < 10) {
+                            seconds = "0" + String(seconds);
+                        }
+
+                        this.setState({
+                            time: String(minutes) + ":" + String(seconds)
+                        });
+                    }
+                });
+        }.bind(this), 1000);
+    }
+
     render() {
         if (!this.state.validAccess){
             return (
@@ -105,9 +152,21 @@ class Story extends Component {
                             <img className="mainIcon" src={homeIcon} style={styles.mainIcon}/>
                         </Link>
                     </div></span>
-                    <span><div className="center"></div></span>
+                    <span><div className="center">
+                        <h2 className="time" style={styles.time}>{this.state.time}</h2>
+                    </div></span>
                     <span><div className="right">
-                        <h3 className="nextButton" onClick={this.moveNext} style={styles.nextButton}>NEXT></h3>
+                        <h3 className={
+                          "nextButton"
+                          + ((this.state.okayToPass && ' available') || '') //okayToPass가 true면 available class가 붙음
+                        } onClick={() => {
+                            if(this.state.okayToPass){
+                              this.moveNext()
+                            }else{
+                                alert('이 스토리를 넘어가기 위한 최소 시간이 아직 지나지 않았습니다.')
+                            }
+                          }
+                        } style={styles.nextButton}>NEXT></h3>
                     </div></span>
                 </div>
                 { this.state.image }
