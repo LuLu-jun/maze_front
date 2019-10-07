@@ -29,15 +29,19 @@ class App extends Component {
               <Route path="/home" component={Home} />
               <Route path="/problem/:num" component={Problem} />
               <Route path="/story/:num" component={Story} />
+<<<<<<< HEAD
               <Route path="/branch/:num" component={Branch} />
               <Route path="/code/:num" component={Code} />
+=======
+              <Route path="/code" component={Code} />
+>>>>>>> 3dff5b052c6c3520b100a6be3afe3b0190bcd7c7
               <Route path="/ending" component={Ending} />
               <Route path="/admin/home" component={AdminHome} />
               <Route path="/admin/progress" component={AdminProgress} />
               <Route path="/admin/member" component={AdminMember} />
               <Route path="/admin/problem" component={AdminProblem} />
               <Route path="/admin/story" component={AdminStory} />
-              <Route path="/admin/branch" component={AdminBranch} />
+{/*              <Route path="/admin/branch" component={AdminBranch} />*/}
               <Route path="/admin/ending" component={AdminEnding} />
           </Switch>
       </div>
