@@ -209,7 +209,7 @@ class Branch extends Component {
                            onChange={(event) => {inputYesStory = event.target.value}}/>
                     <input type="text" placeholder="No 이후 스토리" style={{width: '120px', textAlign: 'center',}}
                            onChange={(event) => {inputNoStory = event.target.value}}/>
-                    <input type="file" accept=".png, .gif" style={styles.fileInput}
+                    <input type="file" accept=".png, .gif, .jpg, .jpeg, .mp4, .wmv" style={styles.fileInput}
                            onChange={(event) => {inputFile = event.target.files[0]}}/>
                     <h3 onClick={this.addBranch} style={styles.button}>+ add</h3>
                 </div>

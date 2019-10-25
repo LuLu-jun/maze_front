@@ -44,7 +44,11 @@ class Ending extends Component {
                     var imageURL = BASE_URL + data.imageURL;
                     this.setState({
                         validAccess: true,
-                        image: <img className="content" src={imageURL} style={styles.content}/>,
+                        image:
+                          imageURL.match(/\.(jpeg|jpg|gif|png)$/) != null ?
+                          <img className="content" src={imageURL} style={styles.content} /> :
+                          <video className="content" src={imageURL} style={styles.content} autoPlay controls/>
+                        ,
                     });
                 }
             })

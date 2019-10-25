@@ -208,7 +208,7 @@ class Story extends Component {
                         <option value={3}>3</option>
                         <option value={4}>4</option>
                     </select>*/}
-                    <input type="file" accept=".png, .gif" style={styles.fileInput}
+                    <input type="file" accept=".png, .gif, .jpg, .jpeg, .mp4, .wmv" style={styles.fileInput}
                            onChange={(event) => {inputFile = event.target.files[0]}}/>
                     <h3 onClick={this.addStory} style={styles.button}>+ add</h3>
                 </div>

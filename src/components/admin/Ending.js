@@ -160,7 +160,7 @@ class Ending extends Component {
                         <option value={classTypes[0]}>전기</option>
                         <option value={classTypes[1]}>후기</option>
                     </select>*/}
-                    <input type="file" accept=".png, .gif" style={styles.fileInput}
+                    <input type="file" accept=".png, .gif, .jpg, .jpeg, .mp4, .wmv" style={styles.fileInput}
                            onChange={(event) => {inputFile = event.target.files[0]}}/>
                     <h3 onClick={this.addEnding} style={styles.button}>+ add</h3>
                 </div>

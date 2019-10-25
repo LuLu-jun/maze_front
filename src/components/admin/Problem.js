@@ -244,7 +244,7 @@ class Problem extends Component {
                                 <option value={problemTypes[1]}>B</option>
                                 <option value={problemTypes[2]}>C</option>
                             </select>
-                            <input type="file" accept=".png, .gif" style={styles.fileInput}
+                            <input type="file" accept=".png, .gif, .jpg, .jpeg, .mp4, .wmv" style={styles.fileInput}
                                    onChange={(event) => {inputFile = event.target.files[0]}}/>
                             <input type="text" placeholder="정답" style={{textAlign: 'center',}}
                                    onChange={(event) => {inputAnswer = event.target.value}}/>
