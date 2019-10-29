@@ -97,7 +97,7 @@ class Member extends Component {
         header.push(<th>Password</th>);
         // header.push(<th>Class Type</th>);
         header.push(<th>Problem Type</th>);
-        header.push(<th>Hint codes</th>);
+        // header.push(<th>Hint codes</th>);
         header.push(<th>Delete</th>);
 
         return (<tr>{header}</tr>);
@@ -119,9 +119,9 @@ class Member extends Component {
             <th>{ classNum }</th>
             <th>{ id }</th>
             <th>{ pwd }</th>
-            {/*<th>{ classType }</th>*/}
+            {/* <th>{ classType }</th> */}
             <th>{ problemType }</th>
-            <th>{ this.getHintCodes(hintCodes) }</th>
+            {/* <th>{ this.getHintCodes(hintCodes) }</th> */}
             <th style={styles.button} onClick={() => this.deleteMember(classNum)}>
                 Delete
             </th>
@@ -199,14 +199,18 @@ class Member extends Component {
                                 <option value={problemTypes[2]}>C</option>
                             </select>
                         </div>
-                        <div stlye={styles.inputLine}>
-                            <input type="text" style={styles.boxInputStyle} placeholder="hint code 1"
-                                   onChange={(event) => {hintCodes[0] = event.target.value}}/>
-                            <input type="text" style={styles.boxInputStyle} placeholder="hint code 2"
-                                   onChange={(event) => {hintCodes[1] = event.target.value}}/>
-                            <input type="text" style={styles.boxInputStyle} placeholder="hint code 3"
-                                   onChange={(event) => {hintCodes[2] = event.target.value}}/>
-                        </div>
+                        {
+                          /*
+                          <div stlye={styles.inputLine}>
+                              <input type="text" style={styles.boxInputStyle} placeholder="hint code 1"
+                                     onChange={(event) => {hintCodes[0] = event.target.value}}/>
+                              <input type="text" style={styles.boxInputStyle} placeholder="hint code 2"
+                                     onChange={(event) => {hintCodes[1] = event.target.value}}/>
+                              <input type="text" style={styles.boxInputStyle} placeholder="hint code 3"
+                                     onChange={(event) => {hintCodes[2] = event.target.value}}/>
+                          </div>
+                          */
+                        }
                     </div>
                     <h3 onClick={this.addMember} style={styles.button}>+ add</h3>
                 </div>
