@@ -33,8 +33,10 @@ class Story extends Component {
             okayToPass: false,
             beginTime: undefined,
             endTime: undefined,
-            time: ''
+            time: '',
+            isImage: true,
         };
+        this.videoElement = React.createRef();
         if (validAccess)
             this.getImage();
     }
@@ -56,10 +58,11 @@ class Story extends Component {
                         image:
                           imageURL.match(/\.(jpeg|jpg|gif|png)$/) != null ?
                           <img className="content" src={imageURL} style={styles.content} /> :
-                          <video className="content" src={imageURL} style={styles.content} autoPlay controls/>
+                          <video className="content" src={imageURL} style={styles.content} onEnded={()=>{this.setState({okayToPass: true}); console.log("finished");}} controls/>
                         ,
                         beginTime: data.begin,
                         endTime: data.end,
+                        isImage: imageURL.match(/\.(jpeg|jpg|gif|png)$/) != null,
                     });
                 }
             })
@@ -94,6 +97,7 @@ class Story extends Component {
 
     componentDidMount() {
         this.timeRefresh = setInterval(function () {
+          if((this.state.isImage)){
             axios.get(API_TIME_URL)
                 .then(response => {
                     if (this.pathName != window.location.pathname) { clearInterval(this.timeRefresh);}
@@ -110,6 +114,7 @@ class Story extends Component {
 
                         if (timeDiff <= 0) {
                             this.setState({time: '', okayToPass: true});
+                            this.timeRefresh = null;
                             return;
                         }
 
@@ -128,7 +133,12 @@ class Story extends Component {
                         });
                     }
                 });
-        }.bind(this), 1000);
+        }
+        else{
+          this.timeRefresh = null;
+          return;
+        }
+      }.bind(this), 1000);
     }
 
     render() {
@@ -159,19 +169,14 @@ class Story extends Component {
                     <span><div className="center">
                         <h2 className="time" style={styles.time}>{this.state.time}</h2>
                     </div></span>
-                    <span><div className="right">
-                        <h3 className={
-                          "nextButton"
-                          + ((this.state.okayToPass && ' available') || '') //okayToPass가 true면 available class가 붙음
-                        } onClick={() => {
-                            if(this.state.okayToPass){
-                              this.moveNext()
-                            }else{
-                                alert('이 스토리를 넘어가기 위한 최소 시간이 아직 지나지 않았습니다.')
-                            }
-                          }
-                        } style={styles.nextButton}>NEXT></h3>
-                    </div></span>
+                    {
+                      this.state.okayToPass?
+                        (<span><div className="right">
+                            <h3 className="nextButton" onClick={() => {this.moveNext()}} style={styles.nextButton}>NEXT></h3>
+                        </div></span>)
+                      :
+                        null
+                    }
                 </div>
                 { this.state.image }
             </div>
