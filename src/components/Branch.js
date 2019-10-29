@@ -105,7 +105,7 @@ class Branch extends Component{
         }
         return (
             <div className="container" style={styles.container}>
-                <div className="group">
+                <div className="group menu">
                     <span><div className="left">
                         <Link to="/" style={{width: '0',}}>
                             <img className="mainIcon" src={homeIcon} style={styles.mainIcon}/>

@@ -4,9 +4,13 @@
     flex-wrap: wrap;
     justify-content: flex-start;
     align-items: flex-start;
-    height: 40px;
     width: calc(100% - 24px);
     margin: 12px;
+    height: 90vh;
+}
+
+.group.menu {
+  height: 40px;
 }
 
 /* flex: 1 sais, that each of the elements shall get the same amount of space, ergo the same width */
