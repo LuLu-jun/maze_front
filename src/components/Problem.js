@@ -13,7 +13,7 @@ import wrongImage from '../wrong.png'
 
 var REAL_API_URL = '', REAL_NEXT_API_URL = '', REAL_HINT_API_URL = '';
 var answer = '';
-const firstHintTime = 10, secondHintTime = 20;
+const hintInterval = 5*60;
 
 class Problem extends Component {
     constructor(props, match) {
@@ -45,9 +45,10 @@ class Problem extends Component {
             beginTime: undefined,
             endTime: undefined,
             time: '',
-            hints: [null, null, null],
+            hints: [],
             answerState: ''
         };
+        this.timeDiff = 0;
         if (validAccess) {
             this.getImage();
             this.getHints();
@@ -61,25 +62,21 @@ class Problem extends Component {
                     if (this.pathName != window.location.pathname) { clearInterval(this.timeRefresh); }
                     if (this.state.beginTime != undefined) {
                         if (this.state.endTime != undefined) {
-                            var timeDiff = Math.ceil((this.state.endTime - this.state.beginTime) / 1000);
+                            this.timeDiff = Math.ceil((response.data.time - this.state.beginTime) / 1000);
                             clearInterval(this.timeRefresh);
                         }
                         else {
-                            var timeDiff = Math.ceil((response.data.time - this.state.beginTime) / 1000);
-
-                            if (timeDiff >= firstHintTime && this.state.hints[0] == null ||
-                                timeDiff >= secondHintTime && this.state.hints[1] == null) {
-                                this.getHints();
-                            }
+                            this.timeDiff = Math.ceil((response.data.time - this.state.beginTime) / 1000);
                         }
 
-                        if (timeDiff < 0) {
+                        if (this.timeDiff < 0) {
                             this.setState({time: ''});
+                            this.timeRefresh = null;
                             return;
                         }
 
-                        var minutes = Math.floor((timeDiff % 3600) / 60);
-                        var seconds = timeDiff % 60;
+                        var minutes = Math.floor((this.timeDiff % 3600) / 60);
+                        var seconds = this.timeDiff % 60;
 
                         if (minutes < 10) {
                             minutes = "0" + String(minutes);
@@ -177,15 +174,9 @@ class Problem extends Component {
             .then(response => {
                 var data = response.data;
                 if (data.result == 0) {
-                  alert(data.error);
+                  alert("Error occured. Please refresh\n---------\n"+data.error);
                 }
                 else {
-                    for (var i = 0; i < 3; i++) {
-                        if (this.state.hints[i] != data.hints[i]) {
-                            alert(data.result+'getHint(): Hint arrived !!');
-                            break;
-                        }
-                    }
                     this.setState({
                         hints: data.hints
                     });
@@ -196,23 +187,24 @@ class Problem extends Component {
             });
     }
 
-    showHints(hints) {
-        var hintGroup = new Array();
-        for (var i = 0; i < 3; i++) {
-            if (hints[i] != null) {
-                hintGroup.push(
-                    <p style={styles.hint}>
-                        {hints[i]}
-                    </p>
-                );
-            }
-        }
-
+    showHints(hints, timeDiff) {
         return (
-            <div className="hintGroup" style={styles.hintGroup}>
-                {hintGroup}
-            </div>
-        );
+          <div className="hintGroup" style={styles.hintGroup}>
+            <p> Hints </p>
+            {
+              hints.map((hint, i)=>{
+                if(timeDiff < (i+1)*hintInterval) {
+                  return;
+                }
+                return (
+                  <p style={styles.hint} key={"hint_"+i}>
+                    {hint}
+                  </p>
+                );
+              })
+            }
+          </div>
+        )
     }
 
     onKeyPress(event) {
@@ -263,7 +255,7 @@ class Problem extends Component {
                 {(this.state.answerState=='' && this.state.image)}
                 {(this.state.answerState=='wrong' && <img className="content" src={wrongImage} style={styles.content}/>)}
                 {(this.state.answerState=='warning' && <img className="content" src={warningImage} style={styles.content}/>)}
-                {this.showHints(this.state.hints)}
+                  {this.showHints(this.state.hints, this.timeDiff)}
             </div>
         );
     }

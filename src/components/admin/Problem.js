@@ -13,7 +13,7 @@ var inputClassType = classTypes[0];
 var inputProblemType = problemTypes[0];
 var inputFile = undefined;
 var inputAnswer = "";
-var inputHints = new Array("", "", "");
+var inputHints = [];
 var REAL_API_URL = '';
 
 class Problem extends Component {
@@ -50,9 +50,7 @@ class Problem extends Component {
         formData.append('answer', inputAnswer);
         formData.append('classType', inputClassType);
         formData.append('problemType', inputProblemType);
-        formData.append('hint1', inputHints[0]);
-        formData.append('hint2', inputHints[1]);
-        formData.append('hint3', inputHints[2]);
+        formData.append('hints', inputHints);
         formData.append('file', inputFile);
 
         axios.post(REAL_API_URL, formData)
@@ -250,12 +248,8 @@ class Problem extends Component {
                                    onChange={(event) => {inputAnswer = event.target.value}}/>
                         </div>
                         <div style={styles.inputLine}>
-                            <input type="text" placeholder="힌트 1" style={{textAlign: 'center',}}
-                                   onChange={(event) => {inputHints[0] = event.target.value}}/>
-                            <input type="text" placeholder="힌트 2" style={{textAlign: 'center',}}
-                                   onChange={(event) => {inputHints[1] = event.target.value}}/>
-                            <input type="text" placeholder="힌트 3" style={{textAlign: 'center',}}
-                                   onChange={(event) => {inputHints[2] = event.target.value}}/>
+                            <input type="text" placeholder="힌트(/로 구분해서 입력해주세요)" style={{textAlign: 'center', width: '100%'}}
+                                   onChange={(event) => {inputHints = event.target.value.split('/')}}/>
                         </div>
                     </div>
                     <h3 onClick={this.addProblem} style={styles.button}>+ add</h3>
