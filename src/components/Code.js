@@ -6,6 +6,7 @@ import {withCookies} from 'react-cookie';
 import {API_NEXT_URL, API_TIME_URL} from "../URL";
 import okIcon from '../ok.png';
 import homeIcon from '../home.png';
+import './Group.css';
 
 import codeImage from '../code.png';
 import wrongImage from '../wrong.png'

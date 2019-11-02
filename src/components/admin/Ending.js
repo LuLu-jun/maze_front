@@ -94,7 +94,7 @@ class Ending extends Component {
         return (<tr>
             {/*<th>{ classType }</th>*/}
             <th style={styles.showButton}>
-                <a href={ BASE_URL + fileURL } style={{textDecoration: 'none', color: 'white', width: '100%', height: '100%'}}>
+                <a href={ BASE_URL + fileURL } style={{textDecoration: 'none', color: 'black', width: '100%', height: '100%'}}>
                     Show
                 </a>
             </th>
@@ -195,10 +195,10 @@ const styles = {
         alignItems: 'center',
     },
     fileInput: {
-        color: 'white',
+        color: 'black',
     },
     tableTitle: {
-        color: 'white',
+        color: 'black',
         margin: '0',
         marginBottom: '5px',
     },

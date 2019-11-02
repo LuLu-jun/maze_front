@@ -182,7 +182,7 @@ const styles = {
         alignItems: 'center',
     },
     resetButton: {
-        color: 'white',
+        color: 'black',
         cursor: 'pointer',
         textDecoration: 'underline',
     },

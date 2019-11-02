@@ -16,7 +16,7 @@ var answer = '';
 const hintInterval = 5*60;
 
 class Problem extends Component {
-    constructor(props, match) {
+    constructor(props, match) { 
         super(props);
 
         const cookieId = this.props.cookies.get('id') || '';
@@ -62,7 +62,7 @@ class Problem extends Component {
                     if (this.pathName != window.location.pathname) { clearInterval(this.timeRefresh); }
                     if (this.state.beginTime != undefined) {
                         if (this.state.endTime != undefined) {
-                            this.timeDiff = Math.ceil((response.state.endTime - this.state.beginTime) / 1000);
+                            this.timeDiff = Math.ceil((this.state.endTime - this.state.beginTime) / 1000);
                             clearInterval(this.timeRefresh);
                         }
                         else {
@@ -268,6 +268,12 @@ const styles = {
         flexDirection: 'column',
         width: '90%',
     },
+    left: {
+        background: 'black',
+    },
+    right: {
+        color: 'black',
+    },
     mainIcon: {
         height: 'calc(100% - 4px)',
         cursor: 'pointer',
@@ -306,12 +312,13 @@ const styles = {
         height: '32px',
         margin: '4px',
         cursor: 'pointer',
+        color: 'black',
     },
     hintGroup: {
         margin: 'auto',
     },
     hint: {
-        color: 'white',
+        color: 'black',
         margin: '4px',
         textAlign: 'center',
         textDecoration: '',

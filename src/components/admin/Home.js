@@ -88,7 +88,7 @@ const styles = {
         alignItems: 'center',
     },
     text: {
-        color: 'white',
+        color: 'black',
         margin: '0',
     },
     buttons: {
@@ -98,7 +98,7 @@ const styles = {
         justifyContent: 'start',
     },
     button: {
-        color: 'white',
+        color: 'black',
         fontSize: '48px',
         marginTop: '4px',
         marginBottom: '4px',

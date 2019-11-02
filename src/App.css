@@ -1,9 +1,16 @@
+@font-face {
+  font-family: "yoonFont";
+  font-weight: 200;
+  src: url("./fonts/KCC.ttf") format("truetype");
+}
+
 .App {
   display: flex;
   justify-content: center;
   text-align: center;
   min-height: 100%;
-  background: black;
+  background: white;
+  font-family: "yoonFont";
 }
 
 .App-logo {
@@ -30,3 +37,4 @@
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
+

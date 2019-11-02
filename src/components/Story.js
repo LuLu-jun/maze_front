@@ -197,7 +197,7 @@ const styles = {
     },
     nextButton: {
         fontSize: '32px',
-        color: 'white',
+        color: 'black',
         cursor: 'pointer',
         margin: '0',
     },
@@ -206,7 +206,7 @@ const styles = {
         maxWidth: '100%',
         maxHeight: '90vh',
         outline: 'none',
-    },
+    }
 };
 
 export default withCookies(Story);
