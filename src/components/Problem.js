@@ -239,7 +239,6 @@ class Problem extends Component {
                         </Link>
                     </div></span>
                     <span><div className="center">
-                        <h2 className="time" style={styles.time}>{this.state.time}</h2>
                     </div></span>
                     <span><div className="right">
                         <div className="answerBox" style={styles.answerBox}>
@@ -256,8 +255,8 @@ class Problem extends Component {
                   {(this.state.answerState=='' && this.state.image)}
                   {(this.state.answerState=='wrong' && <img className="content" src={wrongImage} style={styles.content}/>)}
                   {(this.state.answerState=='warning' && <img className="content" src={warningImage} style={styles.content}/>)}
-                  {this.showHints(this.state.hints, this.timeDiff)}
                 </div>
+                {this.showHints(this.state.hints, this.timeDiff)}
             </div>
         );
     }
