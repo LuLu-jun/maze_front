@@ -62,7 +62,7 @@ class Problem extends Component {
                     if (this.pathName != window.location.pathname) { clearInterval(this.timeRefresh); }
                     if (this.state.beginTime != undefined) {
                         if (this.state.endTime != undefined) {
-                            this.timeDiff = Math.ceil((response.data.time - this.state.beginTime) / 1000);
+                            this.timeDiff = Math.ceil((response.state.endTime - this.state.beginTime) / 1000);
                             clearInterval(this.timeRefresh);
                         }
                         else {

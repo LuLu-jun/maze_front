@@ -98,7 +98,7 @@ class Branch extends Component{
 
             var nextPage = '/' + type;
             if (number != undefined) { nextPage = nextPage + '/' + String(number); }
-            
+
             return (
                 <Redirect to={nextPage}/>
             );

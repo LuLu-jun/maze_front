@@ -96,7 +96,7 @@ class Story extends Component {
     }
 
     componentDidMount() {
-        this.timeRefresh = setInterval(function () {
+      this.timeRefresh = setInterval(function () {
           if((this.state.isImage)){
             axios.get(API_TIME_URL)
                 .then(response => {

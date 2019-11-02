@@ -36,54 +36,8 @@ class Code extends Component {
             image: <div>
                 <img src={codeImage}></img>
             </div>,
-            beginTime: undefined,
-            endTime: undefined,
-            time: '',
             answerState: ''
         };
-    }
-
-    componentDidMount() {
-        console.log("componenDidMount!");
-        this.timeRefresh = setInterval(function () {
-            axios.get(API_TIME_URL)
-                .then(response => {
-                    if (this.pathName != window.location.pathname) { clearInterval(this.timeRefresh); }
-                    if (this.state.beginTime != undefined) {
-                        if (this.state.endTime != undefined) {
-                            var timeDiff = Math.ceil((this.state.endTime - this.state.beginTime) / 1000);
-                            clearInterval(this.timeRefresh);
-                        }
-                        else {
-                            var timeDiff = Math.ceil((response.data.time - this.state.beginTime) / 1000);
-                            /*
-                            if (timeDiff >= firstHintTime && this.state.hints[0] == null ||
-                                timeDiff >= secondHintTime && this.state.hints[1] == null) {
-                                this.getHints();
-                            }*/
-                        }
-
-                        if (timeDiff < 0) {
-                            this.setState({time: ''});
-                            return;
-                        }
-
-                        var minutes = Math.floor((timeDiff % 3600) / 60);
-                        var seconds = timeDiff % 60;
-
-                        if (minutes < 10) {
-                            minutes = "0" + String(minutes);
-                        }
-                        if (seconds < 10) {
-                            seconds = "0" + String(seconds);
-                        }
-
-                        this.setState({
-                            time: String(minutes) + ":" + String(seconds)
-                        });
-                    }
-                });
-        }.bind(this), 1000);
     }
 
     onKeyPress(event) {
@@ -93,6 +47,7 @@ class Code extends Component {
     }
 
     compareCode() {
+        console.log("compareCode");
         axios.post(REAL_NEXT_API_URL, {
             type: 'code',
             number: Number(this.codeNum),
@@ -100,6 +55,7 @@ class Code extends Component {
         })
             .then(response => {
                 var data = response.data;
+                console.log(data);
                 if (data.result == 0) {
                   switch(data.error){
                     case 'wrong code':
@@ -142,6 +98,17 @@ class Code extends Component {
                 <Redirect to='/'/>
             );
         }*/
+        if (this.state.nextPage != undefined) {
+            const type = this.state.nextPage.type;
+            const number = this.state.nextPage.number;
+            const nextPage = '/' + type + '/' + String(number);
+
+            if (type == "code") { window.location.reload(); }
+
+            return (
+                <Redirect to={nextPage}/>
+            );
+        }
 
         return (
             <div className="container" style={styles.container}>
@@ -152,16 +119,14 @@ class Code extends Component {
                         </Link>
                     </div></span>
                     <span><div className="center">
-                        <h2 className="time" style={styles.time}>{this.state.time}</h2>
                     </div></span>
                     <span><div className="right">
                         <div className="answerBox" style={styles.answerBox}>
                             <input type="text" style={styles.answerInput} onKeyPress={this.onKeyPress}
                                    onChange={(event) => {
-                                       console.log(answer);
                                        answer = event.target.value
                                    }}/>
-                            <img className="okButton" src={okIcon} onClick={this.compareAnswer}
+                            <img className="okButton" src={okIcon} onClick={this.compareCode}
                                  style={styles.answerButton}/>
                         </div>
                     </div></span>
