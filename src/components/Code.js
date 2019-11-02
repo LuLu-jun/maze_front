@@ -112,7 +112,7 @@ class Code extends Component {
 
         return (
             <div className="container" style={styles.container}>
-                <div className="group">
+                <div className="group menu">
                     <span><div className="left">
                         <Link to="/" style={{width: '0',}}>
                             <img className="mainIcon" src={homeIcon} style={styles.mainIcon}/>
@@ -131,8 +131,10 @@ class Code extends Component {
                         </div>
                     </div></span>
                 </div>
-                {(this.state.answerState=='' && this.state.image)}
-                {(this.state.answerState=='wrong' && <img className="content" src={wrongImage} style={styles.content}/>)}
+                <div className="group">
+                    {(this.state.answerState=='' && this.state.image)}
+                    {(this.state.answerState=='wrong' && <img className="content" src={wrongImage} style={styles.content}/>)}
+                </div>
             </div>
         );
     }
