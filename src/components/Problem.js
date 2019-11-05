@@ -46,9 +46,9 @@ class Problem extends Component {
             endTime: undefined,
             time: '',
             hints: [],
-            answerState: ''
+            answerState: '',
+            timeDiff: 0
         };
-        this.timeDiff = 0;
         if (validAccess) {
             this.getImage();
             this.getHints();
@@ -62,21 +62,21 @@ class Problem extends Component {
                     if (this.pathName != window.location.pathname) { clearInterval(this.timeRefresh); }
                     if (this.state.beginTime != undefined) {
                         if (this.state.endTime != undefined) {
-                            this.timeDiff = Math.ceil((this.state.endTime - this.state.beginTime) / 1000);
+                            this.state.timeDiff = Math.ceil((this.state.endTime - this.state.beginTime) / 1000);
                             clearInterval(this.timeRefresh);
                         }
                         else {
-                            this.timeDiff = Math.ceil((response.data.time - this.state.beginTime) / 1000);
+                            this.state.timeDiff = Math.ceil((response.data.time - this.state.beginTime) / 1000);
                         }
 
-                        if (this.timeDiff < 0) {
+                        if (this.state.timeDiff < 0) {
                             this.setState({time: ''});
                             this.timeRefresh = null;
                             return;
                         }
 
-                        var minutes = Math.floor((this.timeDiff % 3600) / 60);
-                        var seconds = this.timeDiff % 60;
+                        var minutes = Math.floor((this.state.timeDiff % 3600) / 60);
+                        var seconds = this.state.timeDiff % 60;
 
                         if (minutes < 10) {
                             minutes = "0" + String(minutes);
@@ -188,11 +188,13 @@ class Problem extends Component {
     }
 
     showHints(hints, timeDiff) {
+        console.log(hints);
         return (
           <div className="hintGroup" style={styles.hintGroup}>
             <p> Hints </p>
             {
-              hints.map((hint, i)=>{
+                hints.map((hint, i)=>{
+                  
                 if(timeDiff < (i+1)*hintInterval) {
                   return;
                 }
@@ -251,12 +253,13 @@ class Problem extends Component {
                         </div>
                     </div></span>
                 </div>
+                 {this.showHints(this.state.hints, this.state.timeDiff)}
                 <div className="group">
                   {(this.state.answerState=='' && this.state.image)}
                   {(this.state.answerState=='wrong' && <img className="content" src={wrongImage} style={styles.content}/>)}
                   {(this.state.answerState=='warning' && <img className="content" src={warningImage} style={styles.content}/>)}
                 </div>
-                {this.showHints(this.state.hints, this.timeDiff)}
+                
             </div>
         );
     }
