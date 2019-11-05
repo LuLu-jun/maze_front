@@ -56,13 +56,13 @@ class Story extends Component {
                     this.setState({
                         validAccess: true,
                         image:
-                          imageURL.match(/\.(jpeg|jpg|gif|png)$/) != null ?
+                          imageURL.toLowerCase().match(/\.(jpeg|jpg|gif|png)$/) != null ?
                           <img className="content" src={imageURL} style={styles.content} /> :
                           <video className="content" src={imageURL} style={styles.content} onEnded={()=>{this.setState({okayToPass: true}); console.log("finished");}} controls/>
                         ,
                         beginTime: data.begin,
                         endTime: data.end,
-                        isImage: imageURL.match(/\.(jpeg|jpg|gif|png)$/) != null,
+                        isImage: imageURL.toLowerCase().match(/\.(jpeg|jpg|gif|png)$/) != null,
                     });
                 }
             })
