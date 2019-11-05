@@ -249,7 +249,7 @@ class Problem extends Component {
                         </div>
                         <div style={styles.inputLine}>
                             <input type="text" placeholder="힌트(/로 구분해서 입력해주세요)" style={{textAlign: 'center', width: '100%'}}
-                                   onChange={(event) => {inputHints = event.target.value.split('/')}}/>
+                                   onChange={(event) => {inputHints = event.target.value}}/>
                         </div>
                     </div>
                     <h3 onClick={this.addProblem} style={styles.button}>+ add</h3>
