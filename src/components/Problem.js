@@ -9,7 +9,7 @@ import homeIcon from '../home.png'
 import './Group.css';
 
 import warningImage from '../warning.png'
-import wrongImage from '../wrong.png'
+import wrongImage from '../wrong2.png'
 
 var REAL_API_URL = '', REAL_NEXT_API_URL = '', REAL_HINT_API_URL = '';
 var answer = '';
