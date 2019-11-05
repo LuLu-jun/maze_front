@@ -13,7 +13,7 @@ import wrongImage from '../wrong2.png'
 
 var REAL_API_URL = '', REAL_NEXT_API_URL = '', REAL_HINT_API_URL = '';
 var answer = '';
-const hintInterval = 5*60;
+const hintInterval = 4*60;
 
 class Problem extends Component {
     constructor(props, match) { 
