@@ -155,14 +155,6 @@ class Problem extends Component {
                         nextPage: data.nextPage
                     });
                 }
-                else {
-                    alert(data.result + 'compareAnwser(): Hint arrived !!');
-                    var currentHint = this.state.hints;
-                    currentHint[2] = data.hint;
-                    this.setState({
-                        hints: currentHint
-                    });
-                }
             })
             .catch(response => {
                 alert(response);
